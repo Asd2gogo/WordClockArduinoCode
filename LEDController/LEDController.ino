@@ -25,6 +25,12 @@ public:
     leds[index] = CRGB::Black;
   }
 
+  void turnAllOn(CRGB color){
+    for(int x = 0; x< NUM_LEDS; x++){
+      leds[x] = color;
+    }
+  }
+
   CRGB *getLED(int index)
   {
     return &leds[index];
@@ -125,11 +131,12 @@ class WordConfiguration{
   int digitsToRemove = 0; // digits to turn off from push_back
   CRGB color;
 
-    WordConfiguration(Word* w, int digits = 0, CRGB color = CRGB::White){
+    WordConfiguration(Word* w, int digits = 0, CRGB c = CRGB::White){
       word = w;
       digitsToRemove = digits;
+      color = c;
     }
-}
+};
 
 
 
@@ -197,19 +204,20 @@ public:
     fillWords.push_back(word);
   }
 
-  std::vector<Word *> getMinutsWords(int minute)
+
+  std::vector<WordConfiguration> getMinutsWords(int minute)
   {
-    std::vector<Word *> returnVector;
+    std::vector<WordConfiguration> returnVector;
 
     int zehner = floor(minute / 10);
     int einer = minute % 10;
     if (minute == 11)
     {
-      returnVector.push_back(minutesFirstDigitWords.at(10));  // "elf"
+      returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(10)));  // "elf"
     }
     else if (minute == 12)
     {
-      returnVector.push_back(minutesFirstDigitWords.at(11)); // "zwölf"
+      returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(11))); // "zwölf"
     }
     else
     {
@@ -221,28 +229,28 @@ public:
       case 1:
         if (zehner != 1)
         {
-          returnVector.push_back(minutesFirstDigitWords.at(0)); // "eine"
+          returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(0))); // "eine"
         }
         if (zehner > 1)
         {
-          returnVector.at(0)->makeSingular(1);  // convert "eine" zu "ein"
-          returnVector.push_back(andWords.at(0));
+          returnVector.at(0).digitsToRemove = 1;  // convert "eine" zu "ein"
+          returnVector.push_back(WordConfiguration(andWords.at(0)));
         }
         break;
       case 6:
-        returnVector.push_back(minutesFirstDigitWords.at(5)); 
+        returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(5))); 
           if(zehner == 1){
-          returnVector.at(0)->makeSingular(1);
+          returnVector.at(0).digitsToRemove = 1;
           }
         break;
       case 7:
-       returnVector.push_back(minutesFirstDigitWords.at(6));
+       returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(6)));
           if(zehner == 1){
-          returnVector.at(0)->makeSingular(2);
+          returnVector.at(0).digitsToRemove = 2;
           }
         break;
       default:
-        returnVector.push_back(minutesFirstDigitWords.at(einer-1));
+        returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(einer-1)));
         break;
       }
     }
@@ -253,87 +261,87 @@ public:
       
       break;
     case 1:
-      returnVector.push_back(minutesFirstDigitWords.at(9));
+      returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(9)));
       break;
     default:
-      returnVector.push_back(minutesSecondDigitWords.at(zehner-2));
+      returnVector.push_back(WordConfiguration(minutesSecondDigitWords.at(zehner-2)));
       break;
     }
     
     return returnVector;
   }
 
-  std::vector<Word *> getHourWords(int hour)
+  std::vector<WordConfiguration> getHourWords(int hour)
   {
 
-    std::vector<Word *> returnVector;
+    std::vector<WordConfiguration> returnVector;
     if (hour == 0)
     {
-      returnVector.push_back(hoursFirstDigitWords.at(3));  //vier
-      returnVector.push_back(andWords.at(1));              // und
-      returnVector.push_back(hoursSecondDigitWords.at(0)); // zwanzig
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(3)));  //vier
+      returnVector.push_back(WordConfiguration(andWords.at(1)));              // und
+      returnVector.push_back(WordConfiguration(hoursSecondDigitWords.at(0))); // zwanzig
     }
     else if (hour == 1)
     {
-      returnVector.push_back(hoursFirstDigitWords.at(0)); //ein
-      returnVector.at(0)->makeSingular(1);
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(0))); //ein
+      returnVector.at(0).digitsToRemove = 1;
     }
     else if (hour <= 12)
     {
-      returnVector.push_back(hoursFirstDigitWords.at(hour - 1)); //jeweilige stunde
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(hour - 1))); //jeweilige stunde
     }
     else if (hour == 16)
     {
-      returnVector.push_back(hoursFirstDigitWords.at(5)); // sech
-      returnVector.at(0)->makeSingular(1);
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(5))); // sech
+      returnVector.at(0).digitsToRemove = 1;
     }
     else if (hour == 17)
     {
-      returnVector.push_back(hoursFirstDigitWords.at(6)); //7
-      returnVector.at(0)->makeSingular(2);
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(6))); //7
+      returnVector.at(0).digitsToRemove = 2;
     }
     else if (hour <= 20)
     {
-      returnVector.push_back(hoursFirstDigitWords.at(hour - 11)); // jeweilige erster teil der stunde 3 / 4 / 5 / 6 / 8 / 9
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(hour - 11))); // jeweilige erster teil der stunde 3 / 4 / 5 / 6 / 8 / 9
     }
     else if (hour == 21)
     {
-      returnVector.push_back(hoursFirstDigitWords.at(0)); //ein
-      returnVector.at(0)->makeSingular(1);
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(0))); //ein
+      returnVector.at(0).digitsToRemove = 1;
     }
     else if (hour > 21)
     {
-      returnVector.push_back(hoursFirstDigitWords.at(hour - 21)); //jeweilige stunde
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(hour - 21))); //jeweilige stunde
     }
 
     if (hour < 20 && hour > 12)
     {
-      returnVector.push_back(andWords.at(1));             //und
-      returnVector.push_back(hoursFirstDigitWords.at(9)); // zehn
+      returnVector.push_back(WordConfiguration(andWords.at(1)));             //und
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(9))); // zehn
     }
     else if (hour > 20)
     {
-      returnVector.push_back(andWords.at(1));              //und
-      returnVector.push_back(hoursSecondDigitWords.at(0)); //zwanzig
+      returnVector.push_back(WordConfiguration(andWords.at(1)));              //und
+      returnVector.push_back(WordConfiguration(hoursSecondDigitWords.at(0))); //zwanzig
     }
     else if (hour == 20)
     {
-      returnVector.push_back(hoursSecondDigitWords.at(0)); //zwanzig
+      returnVector.push_back(WordConfiguration(hoursSecondDigitWords.at(0))); //zwanzig
     }
     return returnVector;
   }
 
-  std::vector<std::vector<Word *>> getWordsForTime(int minute, int hour)
+  std::vector<std::vector<WordConfiguration>> getWordsForTime(int minute, int hour)
   { // return array of possible word combination to for given time
 
-    std::vector<std::vector<Word *>> returnVector;
+    std::vector<std::vector<WordConfiguration>> returnVector;
 
-    std::vector<Word *> timeQuaterWords;
-    std::vector<Word *> timeQuaterEastWords;
-    std::vector<Word *> timeMinutesPastWords;
-    std::vector<Word *> timeMinutesBeforeWords;
-    std::vector<Word *> timeOClockWords;
-    std::vector<Word *> timeMiutesBeforeAfterHalfWords;
+    std::vector<WordConfiguration> timeQuaterWords;
+    std::vector<WordConfiguration> timeQuaterEastWords;
+    std::vector<WordConfiguration> timeMinutesPastWords;
+    std::vector<WordConfiguration> timeMinutesBeforeWords;
+    std::vector<WordConfiguration> timeOClockWords;
+    std::vector<WordConfiguration> timeMiutesBeforeAfterHalfWords;
  
 
     returnVector.push_back(timeQuaterWords);
@@ -347,11 +355,11 @@ public:
 
     if (minute == 0)
     { // oClock
-      for (Word *word : getHourWords(hour))
+      for (WordConfiguration wordConfiguration : getHourWords(hour))
       {
-        timeOClockWords.push_back(word);
+        timeOClockWords.push_back(wordConfiguration);
       }
-      timeOClockWords.push_back(basicWords.at(3));
+      timeOClockWords.push_back(WordConfiguration(basicWords.at(3)));
     }
 
     if (minute != 0)
@@ -359,34 +367,34 @@ public:
 
       //Minutes before next Hour "fuenf zehn Minuten vor zehn"
       int minutesBeforeNextHour = (60 - minute);
-      for (Word* word : getMinutsWords(minutesBeforeNextHour)){    // x (Minuten) 
-          timeMinutesBeforeWords.push_back(word);
+      for (WordConfiguration wordConfiguration : getMinutsWords(minutesBeforeNextHour)){    // x (Minuten) 
+          timeMinutesBeforeWords.push_back(wordConfiguration);
       }
-        timeMinutesBeforeWords.push_back(basicWords.at(2)); // Minuten
-        if(minutesBeforeNextHour == 1) 
+        timeMinutesBeforeWords.push_back(WordConfiguration(basicWords.at(2))); // Minuten
+        if(minutesBeforeNextHour == 1) //todo minutes to minute
 
-      timeMinutesBeforeWords.push_back(beforeAfterWords.at(0)); // vor
+      timeMinutesBeforeWords.push_back(WordConfiguration(beforeAfterWords.at(0))); // vor
 
       int nextHour = (hour+1)%24;
       int twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3 
-      for (Word* word : getHourWords(twelfHourFormat)){ 
-        timeMinutesBeforeWords.push_back(word); // add all Words nessesarry for the hour ("zwei und zwanzig")
+      for (WordConfiguration wordConfiguration : getHourWords(twelfHourFormat)){ 
+        timeMinutesBeforeWords.push_back(wordConfiguration); // add all Words nessesarry for the hour ("zwei und zwanzig")
       }
       //timeMinutesBeforeWords.push_back(basicWords.at(3)); // Uhr
 
 
 
       // after current hour "fuenf und viertig zehn Minuten nach neun"
-      for (Word* word : getMinutsWords(minute)){    // x (Minuten) 
-          timeMinutesPastWords.push_back(word);
+      for (WordConfiguration wordConfiguration : getMinutsWords(minute)){    // x (Minuten) 
+          timeMinutesPastWords.push_back(wordConfiguration);
       }
-        timeMinutesPastWords.push_back(basicWords.at(2)); // Minuten
+        timeMinutesPastWords.push_back(WordConfiguration(basicWords.at(2))); // Minuten
 
-      timeMinutesPastWords.push_back(beforeAfterWords.at(1)); // nach
+      timeMinutesPastWords.push_back(WordConfiguration(beforeAfterWords.at(1))); // nach
 
       twelfHourFormat = (hour % 13) + floor(hour / 13); // 10 11 12 1 2 3 
-      for (Word* word : getHourWords(twelfHourFormat)){ 
-        timeMinutesPastWords.push_back(word); // add all Words nessesarry for the hour ("zwei und zwanzig")
+      for (WordConfiguration wordConfiguration : getHourWords(twelfHourFormat)){ 
+        timeMinutesPastWords.push_back(wordConfiguration); // add all Words nessesarry for the hour ("zwei und zwanzig")
       }
       // timeMinutesPastWords.push_back(basicWords.at(3)); // Uhr
     }
@@ -395,36 +403,36 @@ public:
     { // viertel nach current hour // viertel nextHour
 
       //"viertel nach eins"
-      timeQuaterWords.push_back(quaterWords.at(0)); // viertel
+      timeQuaterWords.push_back(WordConfiguration(quaterWords.at(0))); // viertel
 
-      timeQuaterWords.push_back(beforeAfterWords.at(1)); // nach
+      timeQuaterWords.push_back(WordConfiguration(beforeAfterWords.at(1))); // nach
 
       int twelfHourFormat = (hour % 13) + floor(hour / 13); // 10 11 12 1 2 3 
       
-      for (Word* word : getHourWords(twelfHourFormat)){
-        timeQuaterWords.push_back(word);
+      for (WordConfiguration wordConfiguration : getHourWords(twelfHourFormat)){
+        timeQuaterWords.push_back(wordConfiguration);
       }
 
       // "Viertel zwei"
-      timeQuaterEastWords.push_back(quaterWords.at(0)); // viertel
+      timeQuaterEastWords.push_back(WordConfiguration(quaterWords.at(0))); // viertel
 
       int nextHour = hour+1;
       twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3 
       
-      for (Word* word : getHourWords(twelfHourFormat)){
-       timeQuaterWords.push_back(word);
+      for (WordConfiguration wordConfiguration: getHourWords(twelfHourFormat)){
+       timeQuaterWords.push_back(wordConfiguration);
       }
     }
 
     if (minute == 30)
     { // halb
       //"Halb drei"
-      timeQuaterWords.push_back(quaterWords.at(1)); // halb
+      timeQuaterWords.push_back(WordConfiguration(quaterWords.at(1))); // halb
       int nextHour = hour+1;
       int twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3
 
-      for (Word* word : getHourWords(twelfHourFormat)){
-      timeQuaterWords.push_back(word);
+      for (WordConfiguration wordConfiguration : getHourWords(twelfHourFormat)){
+      timeQuaterWords.push_back(wordConfiguration);
       }
 
     }
@@ -432,26 +440,26 @@ public:
     if (minute == 45)
     { // viertel vor next hour // dreiviertel nextHour
 
-      timeQuaterWords.push_back(quaterWords.at(0)); // viertel
+      timeQuaterWords.push_back(WordConfiguration(quaterWords.at(0))); // viertel
 
-      timeQuaterWords.push_back(beforeAfterWords.at(0)); // vor
+      timeQuaterWords.push_back(WordConfiguration(beforeAfterWords.at(0))); // vor
 
       int nextHour = hour +1;
       int twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3 
 
-      for (Word* word : getHourWords(twelfHourFormat)){
-         timeQuaterWords.push_back(word);
+      for (WordConfiguration wordConfiguration : getHourWords(twelfHourFormat)){
+         timeQuaterWords.push_back(wordConfiguration);
        }
 
       // "drei viertel zwei"
 
-      timeQuaterEastWords.push_back(minutesFirstDigitWords.at(2)); // drei
-      timeQuaterEastWords.push_back(quaterWords.at(0)); // viertel
+      timeQuaterEastWords.push_back(WordConfiguration(minutesFirstDigitWords.at(2))); // drei
+      timeQuaterEastWords.push_back(WordConfiguration(quaterWords.at(0))); // viertel
 
       twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3 
       
-      for (Word* word : getHourWords(twelfHourFormat)){
-        timeQuaterWords.push_back(word);
+      for (WordConfiguration wordConfiguration : getHourWords(twelfHourFormat)){
+        timeQuaterWords.push_back(wordConfiguration);
       }
 
     }
@@ -461,30 +469,32 @@ public:
 
       //"zehn Minuten vor Halb drei"
       int deltaMinutes = abs(minute-30);
-      for (Word* word : getMinutsWords(deltaMinutes)){
-        timeMiutesBeforeAfterHalfWords.push_back(word);
+      for (WordConfiguration wordConfiguration : getMinutsWords(deltaMinutes)){
+        timeMiutesBeforeAfterHalfWords.push_back(wordConfiguration);    // drei, vier ....
       }
+      timeMiutesBeforeAfterHalfWords.push_back(WordConfiguration(basicWords.at(2), deltaMinutes==1?1:0)); // "Minuten" // check for singular
       
+      timeMiutesBeforeAfterHalfWords.push_back(WordConfiguration(beforeAfterWords.at(minute>30?1:0))); // "vor" / "nach" // check for vor or nach
+      
+      int nextHour = hour +1;
+      int twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3 
 
-     //timeMiutesBeforeAfterHalfWords.push_back();
-
-      // "zehn Minuten nach Halb drei"
+      for (WordConfiguration wordConfiguration : getHourWords(twelfHourFormat)){
+        timeMiutesBeforeAfterHalfWords.push_back(wordConfiguration);  // "eins" // "zwei"
+      }
 
         
     }
 
-    for (std::vector<Word *> vector : returnVector)
+    for (std::vector<WordConfiguration> vector : returnVector)
     {
 
       if (vector.size() != 0)
       {
-        vector.push_back(basicWords.at(0)); //Es
-        vector.push_back(basicWords.at(1)); //ist
+        vector.push_back(WordConfiguration(basicWords.at(0))); //Es
+        vector.push_back(WordConfiguration(basicWords.at(1))); //ist
       }
     }
-
-    
-
     return returnVector;
   }
 
@@ -569,15 +579,28 @@ void setupWordControllerWithWords()
   myWordController.addfillWord(new Word(myLedController.getLeds(10, 12)));   // NUI
 }
 
+void setLedForTime(int minute, int hour){
+  myWordController.getWordsForTime(minute, hour);
+
+
+
+}
+
+
+
 void setup()
 {
   setupWordControllerWithWords(); // Vectoren mit Wörten füllen (mappen von led indexen)
-
-
+  myLedController.turnAllOn(CRGB::White);
+  myLedController.show();
   // put your setup code here, to run once:
 }
 
 void loop()
 {
+  
+
+  myLedController.show();
+  delay(2000);
   // put your main code here, to run repeatedly:
 }
