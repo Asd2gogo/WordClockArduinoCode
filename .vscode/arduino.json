@@ -1,0 +1,6 @@
+{
+    "sketch": "LEDController\\LEDController.ino",
+    "board": "arduino:avr:uno",
+    "output": "build",
+    "port": "COM3"
+}

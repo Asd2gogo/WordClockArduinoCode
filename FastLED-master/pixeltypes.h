@@ -601,7 +601,7 @@ struct CRGB {
             }
         }
     }
-
+};
     /// Predefined RGB colors
     typedef enum {
         AliceBlue=0xF0F8FF,
@@ -761,8 +761,8 @@ struct CRGB {
         // If you are using no color correction, use this
         FairyLightNCC=0xFF9D2A
 
-    } HTMLColorCode;
-};
+    } CRGB;
+
 
 
 inline __attribute__((always_inline)) bool operator== (const CRGB& lhs, const CRGB& rhs)

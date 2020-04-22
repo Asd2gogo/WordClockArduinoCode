@@ -1,0 +1,11 @@
+{
+  "additionalFiles": "",
+  "builtInLibrariesFolders": "C:\\Program Files (x86)\\Arduino\\libraries",
+  "builtInToolsFolders": "C:\\Program Files (x86)\\Arduino\\tools-builder,C:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr,C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages",
+  "customBuildProperties": "build.path=c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH \u0026 Co. KG\\Projekte\\WordClock\\Arduino\\build,build.warn_data_percentage=75,runtime.tools.avr-gcc.path=C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\avr-gcc\\4.9.2-atmel3.5.4-arduino2,runtime.tools.avr-gcc-4.9.2-atmel3.5.4-arduino2.path=C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\avr-gcc\\4.9.2-atmel3.5.4-arduino2,runtime.tools.avrdude.path=C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\avrdude\\6.3.0-arduino9,runtime.tools.avrdude-6.3.0-arduino9.path=C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\avrdude\\6.3.0-arduino9,runtime.tools.arduinoOTA.path=C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\arduinoOTA\\1.1.1,runtime.tools.arduinoOTA-1.1.1.path=C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\arduinoOTA\\1.1.1",
+  "fqbn": "arduino:avr:uno",
+  "hardwareFolders": "C:\\Program Files (x86)\\Arduino\\hardware,C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages",
+  "otherLibrariesFolders": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries",
+  "runtime.ide.version": "10811",
+  "sketchLocation": "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH \u0026 Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino"
+}

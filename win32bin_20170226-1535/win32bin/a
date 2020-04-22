@@ -1,0 +1,5 @@
+#!/bin/sh
+avra test.asm
+rm test.cof
+rm test.eep.hex
+rm test.hex
