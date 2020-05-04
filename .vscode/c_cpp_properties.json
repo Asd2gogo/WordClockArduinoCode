@@ -3,14 +3,15 @@
         {
             "name": "Win32",
             "includePath": [
-                "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\**",
+                "C:\\Users\\${env:USERNAME}\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\**",
+                "C:\\Users\\${env:USERNAME}\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\**",
+                "C:\\Users\\${env:USERNAME}\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\**",
+                "C:\\Users\\${env:USERNAME}\\Documents\\Arduino\\libraries\\avr-debugger\\src",
+                "C:\\Users\\${env:USERNAME}\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\**",
+                "C:\\Users\\${env:USERNAME}\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.20\\**",
+                "C:\\Users\\${env:USERNAME}\\Documents\\Arduino\\libraries\\**",
                 "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\**",
-                "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\avr-debugger\\src",
-                "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\**",
-                "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.20\\**",
-                "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\**",
-                "C:\\Users\\weine\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.20\\**",
-                "C:\\Users\\weine\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\**"
+                "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\**"
             ],
             "forcedInclude": [],
             "intelliSenseMode": "msvc-x64"

@@ -55,7 +55,18 @@
 			"string_iostream": "cpp",
 			"type_traits": "cpp",
 			"typeinfo": "cpp",
-			"valarray": "cpp"
+			"valarray": "cpp",
+			"array": "cpp",
+			"atomic": "cpp",
+			"*.tcc": "cpp",
+			"clocale": "cpp",
+			"cstdarg": "cpp",
+			"cstdint": "cpp",
+			"ctime": "cpp",
+			"unordered_map": "cpp",
+			"cinttypes": "cpp",
+			"tuple": "cpp",
+			"utility": "cpp"
 		}
 	}
 }
