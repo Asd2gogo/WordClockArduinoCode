@@ -6,7 +6,7 @@
 
 
 //-----------------------LED-Controller-------------------------------------
-#include <StandardCplusplus.h>
+//#include <StandardCplusplus.h>
 //#include <zip.h>
 #include <vector>
 #include <FastLED.h>
@@ -278,7 +278,6 @@ class WordController
     }
     else
     {
-
       switch (einer)
       {
       case 0:
@@ -322,7 +321,9 @@ class WordController
       returnVector.push_back(new WordConfiguration(minutesFirstDigitWords.at(9)));
       break;
     default:
-      returnVector.push_back(new WordConfiguration(andWords.at(0)));
+      if(einer != 0){
+       returnVector.push_back(new WordConfiguration(andWords.at(0)));
+      }
       returnVector.push_back(new WordConfiguration(minutesSecondDigitWords.at(zehner - 2)));
       break;
     }
@@ -531,7 +532,7 @@ class WordController
 
       for (std::vector<WordConfiguration *>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
       {
-        timeQuaterWords.push_back(*pIterator);
+        timeQuaterEastWords.push_back(*pIterator);
       }
     }
 
@@ -551,6 +552,7 @@ class WordController
       timeMiutesBeforeAfterHalfWords.push_back(new WordConfiguration(basicWords.at(2), deltaMinutes == 1 ? 1 : 0)); // "Minuten" // check for singular
 
       timeMiutesBeforeAfterHalfWords.push_back(new WordConfiguration(beforeAfterWords.at(minute > 30 ? 1 : 0))); // "vor" / "nach" // check for vor or nach
+      timeMiutesBeforeAfterHalfWords.push_back(new WordConfiguration(quaterWords.at(1))); // "halb"
 
       int nextHour = hour + 1;
       int twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3
@@ -578,7 +580,6 @@ class WordController
 
     for (int index = 0; index < returnVector.size(); index++)
     {
-
       std::vector<WordConfiguration *> *vector = &returnVector.at(index);
       vector->push_back(new WordConfiguration(basicWords.at(0))); //Es
       vector->push_back(new WordConfiguration(basicWords.at(1))); //ist
@@ -609,7 +610,7 @@ class PixelAnimation
 class Animation
 {
 
-  CHSV _setLED;
+  CRGB _setLED;
   int startTime;
   int _endTime;
   int _duration = -1;
@@ -620,7 +621,7 @@ class Animation
   std::vector<CRGB *> isLED;
   bool _animationDone = false;
 
-  Animation(std::vector<WordConfiguration *> wordConfigs, CHSV ledSetColor, int duration = 500, bool endless = false)
+  Animation(std::vector<WordConfiguration *> wordConfigs, CRGB ledSetColor, int duration = 500, bool endless = false)
   { // add wordsVector with Leds and set Should color or color hue delta if endless is enabled
 
     for (WordConfiguration *wConfig : wordConfigs)
@@ -638,7 +639,7 @@ class Animation
     _endless = endless;
   }
 
-  Animation(std::vector<CRGB *> leds, CHSV ledSetColor, int duration = 500, bool endless = false)
+  Animation(std::vector<CRGB *> leds, CRGB ledSetColor, int duration = 500, bool endless = false)
   {
 
     for (CRGB *led : leds)
@@ -681,16 +682,16 @@ class Animation
             else
             {
               setStartEndTiming(_duration);
-              _setLED = CHSV(_setLED.h + _setLED.h, _setLED.s + _setLED.s, _setLED.v + _setLED.v);
+              _setLED += _setLED ;
             }
           }
           else
           {
 
-            CHSV isColor = rgb2hsv_approximate(**isLedIter);
-            int deltaColor[] = {(int)_setLED.hue - (int)isColor.h, (int)_setLED.sat - (int)isColor.sat, (int)_setLED.val - (int)isColor.val};
+            CRGB isColor = (**isLedIter);
+            int deltaColor[] = {(int)_setLED.r - (int)isColor.r, (int)_setLED.g - (int)isColor.g, (int)_setLED.b - (int)isColor.b};
             int totalDeltaColor[] = {(100 * deltaColor[0]) / perzentageTimeToGo, (100 * deltaColor[1]) / perzentageTimeToGo, (100 * deltaColor[2]) / perzentageTimeToGo};
-            int updateColor[] = {(int)isColor.h + (totalDeltaColor[0] / 100), (int)isColor.s + (totalDeltaColor[1] / 100), (int)isColor.v + (totalDeltaColor[2] / 100)};
+            int updateColor[] = {(int)isColor.r + (totalDeltaColor[0] / 100), (int)isColor.g + (totalDeltaColor[1] / 100), (int)isColor.b + (totalDeltaColor[2] / 100)};
             /*
       Serial.print("time To Go: ");
       Serial.println(perzentageTimeToGo);
@@ -709,7 +710,7 @@ class Animation
       Serial.print("updateColor: ");
       Serial.println(updateColor[2]);
       */
-            CHSV newColor(updateColor[0], updateColor[1], updateColor[2]);
+            CRGB newColor(updateColor[0], updateColor[1], updateColor[2]);
 
             **isLedIter = newColor;
           }
@@ -930,8 +931,8 @@ void setLedForTime(int minute, int hour, int seconds)
   if (lastSentenceID != sentenceID)
   {
     lastSentenceID = sentenceID;
-    myAnimationController.addAnimation(Animation(myLedController->getAllLeds(), rgb2hsv_approximate(backgroundColor),3000));
-    myAnimationController.addAnimation(Animation(possibleSentences.at(sentenceID),rgb2hsv_approximate(wordColor), 3000));
+    myAnimationController.addAnimation(Animation(myLedController->getAllLeds(), backgroundColor,3000));
+    myAnimationController.addAnimation(Animation(possibleSentences.at(sentenceID),wordColor, 3000));
 
     //trigger Animation with WconfigVector and decide wich Animation
     //myAnimationController.startAnimation(possibleSentences.at(sentenceID), AnimationController::ANIMATION_ALL_ON_OTHER_OFF, 1000);
