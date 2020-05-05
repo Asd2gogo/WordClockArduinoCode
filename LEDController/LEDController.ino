@@ -3,8 +3,6 @@
 //overwrite PROGMEM for ESP01 to correctly save String (Char array) on External flash
 #define PROGMEM ICACHE_RODATA_ATTR
 
-
-
 //-----------------------LED-Controller-------------------------------------
 //#include <StandardCplusplus.h>
 //#include <zip.h>
@@ -31,6 +29,8 @@ class WordController;
 
 class LEDController
 {
+   CRGB* getLEDatXY();
+
 public:
   LEDController()
   {
@@ -109,6 +109,48 @@ public:
       allLedsVec.push_back(&leds[x]);
     }
     return allLedsVec;
+  }
+
+  std::vector<CRGB*> getSquareLeds(int distFromCenter){
+    std::vector<CRGB*> returnVector;
+    int maxEdgeLenght = sqrt(NUM_LEDS)-1;
+    int center = maxEdgeLenght / 2;
+
+    int selectedEdgeLength = distFromCenter * 2+1;
+
+    int leftTopEdge = center - (selectedEdgeLength-1)/2;
+    int rightBottomEdge = center + (selectedEdgeLength-1)/2;
+
+    for(int x = leftTopEdge; x <= rightBottomEdge; x++){
+      
+      if(x == leftTopEdge || x == rightBottomEdge){  // first or Last Row -> take all y -> left or right edge of square
+        for(int y = leftTopEdge; y <= rightBottomEdge; y++){
+          returnVector.push_back(getLEDatXY(x,y));
+        }
+      }else{ // somewhere in center -> only top and bottom y -> Top / bottom maxEdgeLenght
+        returnVector.push_back(getLEDatXY(x, leftTopEdge));
+        returnVector.push_back(getLEDatXY(x, rightBottomEdge));
+      }
+    }
+    return returnVector;
+  }
+
+  // Get single LED -> X/Y 0/0 is top left
+  CRGB* getLEDatXY(int x, int y){
+
+      bool isRLrow = y%2; // true if y is uneven -> Led index is from right to Left in this isRLrow
+      int index;
+
+      int x0;
+       x0 = NUM_LEDS -(15*(y + 1)); // set x0 corrosponding to current y row
+      if(isRLrow){
+        x0 += 14; // if row index is from Right to Left -> add 14 to start to adjust x0
+        index = x0-x;
+      }else{
+        index = x0+x;
+      }
+
+    return &leds[index];
   }
 
   void output()
@@ -611,17 +653,21 @@ class Animation
 {
 
   CRGB _setLED;
+  
   int startTime;
   int _endTime;
   int _duration = -1;
+  int _delay = 0;
   int lastPerzentagTimePassed = 0;
   bool _endless;
+  bool didTickBefore = false;
 
   public:
   std::vector<CRGB *> isLED;
   bool _animationDone = false;
+  int iD = -1;
 
-  Animation(std::vector<WordConfiguration *> wordConfigs, CRGB ledSetColor, int duration = 500, bool endless = false)
+  Animation(std::vector<WordConfiguration *> wordConfigs, CRGB ledSetColor, int duration = 500, int delay = 0, bool endless = false)
   { // add wordsVector with Leds and set Should color or color hue delta if endless is enabled
 
     for (WordConfiguration *wConfig : wordConfigs)
@@ -633,13 +679,14 @@ class Animation
     }
     _setLED = ledSetColor;
 
-    startTime = millis();
+    startTime = millis() + delay;
     _duration = duration;
+    _delay = delay;
     _endTime = startTime + _duration;
     _endless = endless;
   }
 
-  Animation(std::vector<CRGB *> leds, CRGB ledSetColor, int duration = 500, bool endless = false)
+  Animation(std::vector<CRGB *> leds, CRGB ledSetColor, int duration = 500, int delay = 0, bool endless = false)
   {
 
     for (CRGB *led : leds)
@@ -648,15 +695,20 @@ class Animation
     }
 
     _setLED = ledSetColor;
+    _delay = delay;
+    _duration = duration;
     _endless = endless;
-
-    setStartEndTiming(duration);
+    startTime = millis() + _delay;
+    _endTime = startTime + _duration;
+    
   }
 
-  void tick()
+  bool tick()
   {
-
     int currentTime = millis();
+    if(currentTime <= startTime){ // return if animation shouldnt start because of set delay
+      return false;
+    }
     int timePassed = currentTime - startTime;
     int perzentageTimePassed = (timePassed * 100) / _duration;
 
@@ -718,6 +770,14 @@ class Animation
         lastPerzentagTimePassed = perzentageTimePassed;
       }
     }
+
+    if(didTickBefore){
+       return false;
+    }else{
+      didTickBefore = true;
+      return true;
+    }
+  
   }
 
   void setStartEndTiming(int duration)
@@ -760,37 +820,46 @@ class AnimationController
     int currentMillis = millis();
     // tick each pixel and word animation
     // change difference slowly between set and is
+     Serial.print("AnimationSize: ");
+      Serial.println(myAnimations.size());
     for (std::vector<Animation>::iterator iter = myAnimations.begin(); iter != myAnimations.end();)
     {
+      Serial.print("AnimationID: ");
+      Serial.println(iter->iD);
 
       if ((*iter)._animationDone)
       {
-        Serial.println("AnimDone");
+        Serial.println("Animation Done");
         iter = myAnimations.erase(iter);
       }
       else
       {
+        Serial.println("Animation not Done");
+        if((*iter).tick()){// Animation ticks -> returns true if animation is startet for the first time -> check for doubles
 
-        (*iter).tick();
+          for(std::vector<Animation>::iterator animationIterator = myAnimations.begin(); animationIterator != myAnimations.end(); animationIterator++){
+               Serial.print("compare to AnimationID: ");
+                Serial.println(animationIterator->iD);
+            if(animationIterator->iD != iter->iD){ // check to not delete current pixels from current animation
+                
+              for(CRGB* newPixel : iter->isLED){
+                Serial.print(animationIterator->deleteDouble(newPixel));
+              }
+              Serial.println();
+            }
+
+          }
+        }
         iter++;
       }
     }
-    myAnimations.shrink_to_fit();
+  myAnimations.shrink_to_fit();
   }
 
   void addAnimation(Animation anim)
   { // check if each pixel in the word is in an word or pixel animation and delete it from there
-    for(std::vector<Animation>::iterator animationIterator = myAnimations.begin(); animationIterator != myAnimations.end(); animationIterator++){
-        for(CRGB* newPixel : anim.isLED){
-          Serial.println(animationIterator->deleteDouble(newPixel));
-        }
-    }
+    anim.iD = myAnimations.size();
     myAnimations.push_back(anim);
-    
-    for(Animation _anim: myAnimations){
-      Serial.print("Animation size: ");
-      Serial.println(_anim.isLED.size());
-    }
   }
 
   void setToRandom(std::vector<CRGB *> leds, byte brightness)
@@ -907,6 +976,7 @@ void setupWordControllerWithWords()
 int lastMinute = -1;
 int lastSentenceID = -1;
 int sentencesCount;
+int animationMode = 0;
 CRGB backgroundColor = CRGB::Gray;
 CRGB wordColor = CRGB::Red;
 
@@ -931,8 +1001,31 @@ void setLedForTime(int minute, int hour, int seconds)
   if (lastSentenceID != sentenceID)
   {
     lastSentenceID = sentenceID;
-    myAnimationController.addAnimation(Animation(myLedController->getAllLeds(), backgroundColor,3000));
-    myAnimationController.addAnimation(Animation(possibleSentences.at(sentenceID),wordColor, 3000));
+
+    switch(animationMode){
+
+      case(0): // "normal" mode for each sentence all Words are faded in, old will fade out // TODO remove or dont display "x minuten vor/ nach halb" da nicht möglich anzuzeigen
+        myAnimationController.addAnimation(Animation(myLedController->getAllLeds(), backgroundColor,2000));
+        myAnimationController.addAnimation(Animation(possibleSentences.at(sentenceID),wordColor, 2000));
+      break;
+
+      case(1): // "reading" mode -> sentence is played in loop until next sentence and within loop, each word will show and dimm in reading order
+
+      break;
+
+      case(2): // "Raining" ->  Words that should turn on, are falling from top in random order
+
+      break;
+      case(3): // "Snake" ->  One Pixel is moving across the screen (circular pattern) and pixel with correspondig word are kept on
+
+      break;
+
+      case(4): // "Square" -> square gets bigger from center and clears all Leds, when get smaller to center again, new sentence stay on
+
+      break;
+    }
+
+    
 
     //trigger Animation with WconfigVector and decide wich Animation
     //myAnimationController.startAnimation(possibleSentences.at(sentenceID), AnimationController::ANIMATION_ALL_ON_OTHER_OFF, 1000);
@@ -1045,7 +1138,15 @@ ESP8266WebServer webServer(80);
         "<label for=\"wordColor\">Wörter Farbe:  </label>"
         "<input type= \"color\" id = \"wordColor\" name=\"wordColor\" value=\"#%02X%02X%02X\" required>"
     "</li>"
-    
+    /*
+    "<li>"
+    <label for="animationMode">AnimationsArt:</label>
+      <select id="animationMode" name="mode">
+        <option value="1">Synchron Fade all</option>
+        <option value="2">Fade after each other</option>
+      </select>
+    "</li>"
+    */
    " <li>"
         "<input type=\"submit\" value=\"Ok\">"
     "</li>"
@@ -1151,7 +1252,7 @@ int lastIncrease = 0;
 void loop()
 {
 
-  if(lastIncrease + 200 < millis()){
+  if(lastIncrease + 5000 < millis()){
     lastIncrease = millis();
     s++;
     if(s >59){
@@ -1165,7 +1266,24 @@ void loop()
         }
       }
     }
-    setLedForTime(m, h, s);
+   
+   /*
+    Serial.print("Heap:  ");
+    Serial.print(ESP.getFreeHeap());
+    Serial.print("  Stack:  ");
+    Serial.println(ESP.getFreeContStack());
+    */
+    //setLedForTime(m, h, s);
+    myLedController->turnAllOff();
+    myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(3), CRGB::Red, 1000, 500));
+    myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(3), CRGB::Green, 500, 1000));
+/*
+    for(int i = 0 ; i < 8; i++){
+       myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(i), CRGB::Red, 100, i*100));
+       myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(i), CRGB::Black, 500, (i*100)+400));
+    }
+  */  
+
     //printLEDDataSerial();
   }
 
@@ -1174,11 +1292,11 @@ void loop()
 
 
 
-  if(millis()%30 == 0){
+  if(millis()%5 == 0){
   myLedController->output();
-  
   } 
   myAnimationController.tick();
+  
 
   dnsServer.processNextRequest();
   webServer.handleClient();
