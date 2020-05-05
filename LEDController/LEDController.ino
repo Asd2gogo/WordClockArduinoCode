@@ -709,6 +709,11 @@ class Animation
     if(currentTime <= startTime){ // return if animation shouldnt start because of set delay
       return false;
     }
+
+    if(isLED.empty()){
+      _animationDone = true;
+      return false;
+    }
     int timePassed = currentTime - startTime;
     int perzentageTimePassed = (timePassed * 100) / _duration;
 
@@ -720,6 +725,7 @@ class Animation
 
         int perzentageTimeToGo = 100 - perzentageTimePassed - timeMissed;
         std::vector<CRGB *>::iterator isLedIter = isLED.begin(); // For each led in Animation delta color from start off animation to set value is calculated and
+        
         for (; isLedIter != isLED.end(); isLedIter++)
         {
 
@@ -780,6 +786,10 @@ class Animation
   
   }
 
+  bool isRunning(){
+    return didTickBefore;
+  }
+
   void setStartEndTiming(int duration)
   {
     startTime = millis();
@@ -820,40 +830,36 @@ class AnimationController
     int currentMillis = millis();
     // tick each pixel and word animation
     // change difference slowly between set and is
-     Serial.print("AnimationSize: ");
-      Serial.println(myAnimations.size());
-    for (std::vector<Animation>::iterator iter = myAnimations.begin(); iter != myAnimations.end();)
+     
+      for (std::vector<Animation>::iterator iter = myAnimations.begin(); iter != myAnimations.end();)
     {
-      Serial.print("AnimationID: ");
-      Serial.println(iter->iD);
-
+    
       if ((*iter)._animationDone)
       {
-        Serial.println("Animation Done");
         iter = myAnimations.erase(iter);
+      }else{
+        iter++;
       }
-      else
-      {
-        Serial.println("Animation not Done");
+    }
+      myAnimations.shrink_to_fit();
+
+    for (std::vector<Animation>::iterator iter = myAnimations.begin(); iter != myAnimations.end();iter++)
+    {
         if((*iter).tick()){// Animation ticks -> returns true if animation is startet for the first time -> check for doubles
 
           for(std::vector<Animation>::iterator animationIterator = myAnimations.begin(); animationIterator != myAnimations.end(); animationIterator++){
-               Serial.print("compare to AnimationID: ");
-                Serial.println(animationIterator->iD);
-            if(animationIterator->iD != iter->iD){ // check to not delete current pixels from current animation
+            
+            if(animationIterator->iD != iter->iD && animationIterator->isRunning()){ // check to not delete current pixels from current animation
                 
               for(CRGB* newPixel : iter->isLED){
-                Serial.print(animationIterator->deleteDouble(newPixel));
+                animationIterator->deleteDouble(newPixel);
               }
-              Serial.println();
             }
 
           }
         }
-        iter++;
-      }
     }
-  myAnimations.shrink_to_fit();
+
   }
 
   void addAnimation(Animation anim)
@@ -1252,7 +1258,7 @@ int lastIncrease = 0;
 void loop()
 {
 
-  if(lastIncrease + 5000 < millis()){
+  if(lastIncrease + 1100 < millis()){
     lastIncrease = millis();
     s++;
     if(s >59){
@@ -1274,15 +1280,14 @@ void loop()
     Serial.println(ESP.getFreeContStack());
     */
     //setLedForTime(m, h, s);
-    myLedController->turnAllOff();
-    myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(3), CRGB::Red, 1000, 500));
-    myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(3), CRGB::Green, 500, 1000));
-/*
+
+    uint8_t r = random8();
+    uint8_t g = random8();
+    uint8_t b = random8();
     for(int i = 0 ; i < 8; i++){
-       myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(i), CRGB::Red, 100, i*100));
-       myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(i), CRGB::Black, 500, (i*100)+400));
+       myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(i), CRGB(r,g,b), 100, i*100));
+       myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(i), CRGB::Black, 400, (i*100)+100));
     }
-  */  
 
     //printLEDDataSerial();
   }
@@ -1292,7 +1297,7 @@ void loop()
 
 
 
-  if(millis()%5 == 0){
+  if(millis()%15 == 0){
   myLedController->output();
   } 
   myAnimationController.tick();

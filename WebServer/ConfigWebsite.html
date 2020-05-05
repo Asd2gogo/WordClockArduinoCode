@@ -1,34 +1,33 @@
-<!DOCTYPE html><html lang='de'><head>
-    <meta name='viewport' content='width=device-width'>
-    <style>
-        li{
-            list-style-type: none;
-            border-color: white;
-            border-style: solid;
-            text-align: center;
-        }
-    </style>
-    </head>
-    <body>
-    <form action="/timeentered">
-    <ul>
-    <li>
-        <h1>WordClock Configurator</h1>
-        <label for="timeform">Uhrzeit einstellen:  </label>
-        <input type="time" id="timeform" name="clockTime" autofocus required>
-    </li>
-    <li>
-        <label for="background">Hintergrund Farbe:  </label>
-        <input type= "color" id = "backgroundColor" name="backgroundColor" required>
-    </li>
-    <li>
-        <label for="wordColor">Wörter Farbe:  </label>
-        <input type= "color" id = "wordColor" name="wordColor" required>
-    </li>
-    
-    <li>
-        <input type="submit" value="Ok">
-    </li>
-    </ul>
-    </form>
-    </body></html>
+"<!DOCTYPE html><html lang='de'><head>"
+    "<meta name='viewport' content='width=device-width'>"
+    "<style>"
+        "li{"
+            "list-style-type: none;"
+            "border-color: white;"
+            "border-style: solid;"
+            "text-align: center;"
+     "   }"
+    "</style>"
+    "</head>"
+    "<body>"
+    "<form action=\"/timeentered\">"
+    "<ul>"
+    "<li>"
+        "<h1>WordClock Configurator</h1>"
+        "<label for=\"timeform\">Uhrzeit einstellen:  </label>"
+        "<input type=\"time\" id=\"timeform\" name=\"clockTime\" value=\"%02i:%02i\" autofocus required>"
+    "</li>"
+    "<li>"
+        "<label for=\"background\">Hintergrund Farbe:  </label>"
+        "<input type= \"color\" id = \"backgroundColor\" name=\"backgroundColor\" value =\"#%02X%02X%02X\" required>"
+    "</li>"
+    "<li>"
+        "<label for=\"wordColor\">Wörter Farbe:  </label>"
+        "<input type= \"color\" id = \"wordColor\" name=\"wordColor\" value=\"#%02X%02X%02X\" required>"
+    "</li>"
+   " <li>"
+        "<input type=\"submit\" value=\"Ok\">"
+    "</li>"
+    "</ul>"
+    "</form>"
+    "</body></html>"
