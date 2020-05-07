@@ -659,7 +659,7 @@ class Animation
   int _endTime;
   int _duration = -1;
   int _delay = 0;
-  int lastPerzentagTimePassed = 0;
+  byte lastPerzentagTimePassed = 0;
   bool _endless;
   bool didTickBefore = false;
 
@@ -1054,18 +1054,23 @@ void setLedForTime(int minute, int hour, int seconds)
       break;
     case (3): // "Snake" ->  One Pixel is moving across the screen (circular pattern) and pixel with correspondig word are kept on
     {
-      int outerDist = 6;
+      int outerDist = 7;
+      int cnt = 0;
+      uint8_t r = random8();
+      uint8_t g = random8();
+      uint8_t b = random8();
       for (int x = outerDist; x >= 0; x--)
       {
-
         std::vector<CRGB *> leds = myLedController->getSquareLeds(x);
         leds.pop_back();
 
         int index = 0;
         for (std::vector<CRGB *>::iterator ledIter = leds.begin(); ledIter != leds.end(); ledIter++)
         {
-          myAnimationController.addAnimation(Animation(*ledIter, CRGB::Red, 50, 100 * index));
-          myAnimationController.addAnimation(Animation(*ledIter, CRGB::Black, 400, 100 * index + 300));
+          int delay = cnt * 10;
+          myAnimationController.addAnimation(Animation(*ledIter, CRGB(r, g, b), 10, delay));
+          myAnimationController.addAnimation(Animation(*ledIter, CRGB::Black, 300, delay + 400));
+          cnt++;
           index++;
         }
       }
@@ -1087,9 +1092,29 @@ void setLedForTime(int minute, int hour, int seconds)
 
     case (6): // "Matrix" -> random x position , random fadeouttime(diffrent tracelengths)
     {
+
       int randX = random(0, 14);
-      int randomFadeOutDelay = random(1000, 2000);
-      int randomContinueDelay = random(500, 1500);
+      int randYstart = random (0, 8);
+      int randomLength = random(3, 15);
+      int randomFadeOutDelay = random(1000, 3000);
+      int randomContinueDelay = random(100, 600);
+
+      byte cnt = 0;
+
+      for(int y = randYstart; y < randYstart + randomLength; y++){
+
+      int delay = randomContinueDelay*cnt;
+      
+      CRGB* led = myLedController->getLEDatXY(randX, y);
+
+      myAnimationController.addAnimation(Animation(led,CRGB::Black, 5,delay+50+randomFadeOutDelay));
+      myAnimationController.addAnimation(Animation(led,CRGB::DarkOliveGreen, 5,delay+50));
+      myAnimationController.addAnimation(Animation(led,CRGB::White, 5,delay));
+
+      cnt++;
+      }
+
+
     }
 
     break;
@@ -1168,7 +1193,7 @@ DNSServer dnsServer;
 ESP8266WebServer webServer(80);
 
 static const char responseHTML[] =
-  
+
     "<!DOCTYPE html><html lang='de'><head>"
     "<meta name='viewport' content='width=device-width'>"
     "<style>"
@@ -1214,9 +1239,7 @@ static const char responseHTML[] =
 
 void getFormatedHTMLResponse(char *string, int _h, int _m, uint8_t _wordColor[], uint8_t _backgroundColor[])
 {
-
   sprintf(string, responseHTML, _h, _m, _backgroundColor[0], _backgroundColor[1], _backgroundColor[2], _wordColor[0], _wordColor[1], _wordColor[2]);
-  Serial.println(string);
 }
 
 void setupAndStartWifi()
@@ -1332,27 +1355,6 @@ void loop()
     }
 
     //setLedForTime(m, h, s);
-    int outerDist = 7;
-    int cnt = 0;
-      uint8_t r = random8();
-      uint8_t g = random8();
-      uint8_t b = random8();
-    for (int x = outerDist; x >= 0; x--)
-    {
-      std::vector<CRGB *> leds = myLedController->getSquareLeds(x);
-      leds.pop_back();
-
-          int index = 0;
-      for (std::vector<CRGB *>::iterator ledIter = leds.begin(); ledIter != leds.end(); ledIter++)
-      {
-        int delay = cnt * 10;
-        myAnimationController.addAnimation(Animation(*ledIter, CRGB(r,g,b), 10, delay));
-        myAnimationController.addAnimation(Animation(*ledIter, CRGB::Black, 300, delay + 400));
-        cnt++;
-        index++;
-      }
-    }
-    //printLEDDataSerial();
   }
   /*
      Serial.print("Heap:  ");
