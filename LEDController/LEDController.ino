@@ -4,7 +4,7 @@
 #define PROGMEM ICACHE_RODATA_ATTR
 
 //-----------------------LED-Controller-------------------------------------
-#include <StandardCplusplus.h>
+//#include <StandardCplusplus.h>
 //#include <zip.h>
 #include <vector>
 #include <FastLED.h>
@@ -1060,6 +1060,7 @@ void setLedForTime(int minute, int hour, int seconds)
 
         std::vector<CRGB *> leds = myLedController->getSquareLeds(x);
         leds.pop_back();
+
         int index = 0;
         for (std::vector<CRGB *>::iterator ledIter = leds.begin(); ledIter != leds.end(); ledIter++)
         {
@@ -1320,7 +1321,7 @@ int ypos = 7;
 void loop()
 {
 
-  if (lastIncrease + 7000 < millis())
+  if (lastIncrease + 3000 < millis())
   {
 
     lastIncrease = millis();
@@ -1343,16 +1344,19 @@ void loop()
     //setLedForTime(m, h, s);
     int outerDist = 7;
     int cnt = 0;
+     uint8_t r = random8();
+      uint8_t g = random8();
+      uint8_t b = random8();
     for (int x = outerDist; x >= 0; x--)
     {
       std::vector<CRGB *> leds = myLedController->getSquareLeds(x);
-      leds.erase
+      leds.pop_back();
 
           int index = 0;
       for (std::vector<CRGB *>::iterator ledIter = leds.begin(); ledIter != leds.end(); ledIter++)
       {
         int delay = cnt * 10;
-        myAnimationController.addAnimation(Animation(*ledIter, CRGB::Red, 10, delay));
+        myAnimationController.addAnimation(Animation(*ledIter, CRGB(r,g,b), 10, delay));
         myAnimationController.addAnimation(Animation(*ledIter, CRGB::Black, 300, delay + 400));
         cnt++;
         index++;
