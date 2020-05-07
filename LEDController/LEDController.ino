@@ -1164,21 +1164,11 @@ void setNewTime(int newH, int newM)
 
 const byte DNS_PORT = 53;
 IPAddress apIP(172, 217, 28, 1);
-//DNSServer dnsServer;
-//ESP8266WebServer webServer(80);
+DNSServer dnsServer;
+ESP8266WebServer webServer(80);
 
 static const char responseHTML[] =
-    /*
-                      "<!DOCTYPE html><html lang='de'><head>"
-                      "<meta name='viewport' content='width=device-width'>"
-                      "<title>Uhrzeit einstellen</title></head><body>"
-                      "<form action=\"/timeentered\">"
-                      "<label for=\"appt\">Uhrzeit einstellen:  </label>"
-                      "<input type=\"time\" id=\"timeform\" name=\"clockTime\" autofocus required>"
-                      "<input type=\"submit\" value=\"Ok\">"
-                      "</form>"
-                      "</body></html>";
-*/
+  
     "<!DOCTYPE html><html lang='de'><head>"
     "<meta name='viewport' content='width=device-width'>"
     "<style>"
@@ -1221,7 +1211,7 @@ static const char responseHTML[] =
     "</ul>"
     "</form>"
     "</body></html>";
-/*
+
 void getFormatedHTMLResponse(char *string, int _h, int _m, uint8_t _wordColor[], uint8_t _backgroundColor[])
 {
 
@@ -1293,14 +1283,14 @@ String splitString(String data, char separator, int index)
 
   return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
-*/
+
 //-----------------------Standard Arduino --------------------------------
 
 void setup()
 {
 
   Serial.begin(115200);
-  //setupAndStartWifi();
+  setupAndStartWifi();
 
   myLedController->setup(); // disable for debug // Add leds to FastLED Library
   //Serial.println("Setup Done");
@@ -1344,7 +1334,7 @@ void loop()
     //setLedForTime(m, h, s);
     int outerDist = 7;
     int cnt = 0;
-     uint8_t r = random8();
+      uint8_t r = random8();
       uint8_t g = random8();
       uint8_t b = random8();
     for (int x = outerDist; x >= 0; x--)
@@ -1376,6 +1366,6 @@ void loop()
   }
   myAnimationController.tick();
 
-  //dnsServer.processNextRequest();
-  //webServer.handleClient();
+  dnsServer.processNextRequest();
+  webServer.handleClient();
 }
