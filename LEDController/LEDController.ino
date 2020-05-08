@@ -4,7 +4,7 @@
 #define PROGMEM ICACHE_RODATA_ATTR
 
 //-----------------------LED-Controller-------------------------------------
-//#include <StandardCplusplus.h>
+#include <StandardCplusplus.h>
 //#include <zip.h>
 #include <vector>
 #include <FastLED.h>
@@ -1046,8 +1046,33 @@ void setLedForTime(int minute, int hour, int seconds)
       break;
 
     case (1): // "reading" mode -> sentence is played in loop until next sentence and within loop, each word will show and dimm in reading order
+    {
+      std::vector<WordConfiguration *> sentence = possibleSentences.at(sentenceID);
 
-      break;
+      int wordCnt = sentence.size();
+      int readingTimeForWord = 500;
+
+      byte sentenceRepetitions = floor((secondsForEachSentence * 1000) / (wordCnt * readingTimeForWord));
+
+      int timeForWord = (secondsForEachSentence * 1000) / (sentenceRepetitions * wordCnt);
+
+      for (int repetition = 0; repetition < sentenceRepetitions; repetition++)
+      {
+        
+
+        int cnt = 0;
+
+        for (std::vector<WordConfiguration *>::iterator wordIter = sentence.begin(); wordIter < sentence.end(); wordIter++, cnt++)
+        {
+
+          int delay = cnt * timeForWord;
+          myAnimationController.addAnimation(Animation((*wordIter)->getLeds((*wordIter)->digitsToRemove), wordColor, 80, delay));
+          myAnimationController.addAnimation(Animation((*wordIter)->getLeds((*wordIter)->digitsToRemove), backgroundColor, 100, delay + timeForWord -200));
+        }
+      }
+    }
+
+    break;
 
     case (2): // "Raining" ->  Words that should turn on, are falling from top in random order
 
@@ -1094,27 +1119,26 @@ void setLedForTime(int minute, int hour, int seconds)
     {
 
       int randX = random(0, 14);
-      int randYstart = random (0, 8);
+      int randYstart = random(0, 8);
       int randomLength = random(3, 15);
       int randomFadeOutDelay = random(1000, 3000);
       int randomContinueDelay = random(100, 600);
 
       byte cnt = 0;
 
-      for(int y = randYstart; y < randYstart + randomLength; y++){
+      for (int y = randYstart; y < randYstart + randomLength; y++)
+      {
 
-      int delay = randomContinueDelay*cnt;
-      
-      CRGB* led = myLedController->getLEDatXY(randX, y);
+        int delay = randomContinueDelay * cnt;
 
-      myAnimationController.addAnimation(Animation(led,CRGB::Black, 5,delay+50+randomFadeOutDelay));
-      myAnimationController.addAnimation(Animation(led,CRGB::DarkOliveGreen, 5,delay+50));
-      myAnimationController.addAnimation(Animation(led,CRGB::White, 5,delay));
+        CRGB *led = myLedController->getLEDatXY(randX, y);
 
-      cnt++;
+        myAnimationController.addAnimation(Animation(led, CRGB::Black, 5, delay + 50 + randomFadeOutDelay));
+        myAnimationController.addAnimation(Animation(led, CRGB::DarkOliveGreen, 5, delay + 50));
+        myAnimationController.addAnimation(Animation(led, CRGB::White, 5, delay));
+
+        cnt++;
       }
-
-
     }
 
     break;
