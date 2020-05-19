@@ -1,16 +1,21 @@
-//#define FASTLED_ALLOW_INTERRUPTS 0#
+//#include <ArduinoSTL.h>
+
+#define FASTLED_ALLOW_INTERRUPTS 0
 
 //overwrite PROGMEM for ESP01 to correctly save String (Char array) on External flash
 #define PROGMEM ICACHE_RODATA_ATTR
 
 //-----------------------LED-Controller-------------------------------------
-#include <StandardCplusplus.h>
+
 //#include <zip.h>
-#include <vector>
+//#include <StandardCplusplus.h>
+//#include <vector.cpp>
+
 #include <FastLED.h>
-#include <arduino.h>
+//#include <arduino.h>
 
 //------------------------WEB Server-----------------------------------------
+
 #include <ESP8266WiFi.h>
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
@@ -74,8 +79,7 @@ public:
   }
 
   std::vector<CRGB *> getLeds(int startIndex, int endIndex)
-  { // todo check richtung .. manchmal erster buchstabe ist großer als letzer
-
+  {
     std::vector<CRGB *> returnVector;
 
     if (startIndex < endIndex)
@@ -163,6 +167,34 @@ public:
     }
 
     return &leds[index];
+  }
+
+  // return one line on pixels (0 is top or left) orientation 0 -> horizontal 1-> vertical
+  // length of line (only odd umbers) 1,3,5...
+  std::vector<CRGB *> getLineLeds(int index, int orientation, int length = 15)
+  {
+    std::vector<CRGB *> returnVector;
+    int center = 7;
+    int oneSideDist = floor(length/2);
+
+    if (!orientation)
+    { // horizontal x line
+
+      for (int x = center-oneSideDist; x <= center + oneSideDist; x++)
+      {
+        returnVector.push_back(getLEDatXY(x, index));
+      }
+    }
+    else
+    { //vertical y line
+
+      for (int y = center - oneSideDist; y <= center + oneSideDist; y++)
+      {
+        returnVector.push_back(getLEDatXY(index, y));
+      }
+    }
+
+    return returnVector;
   }
 
   void output()
@@ -1058,7 +1090,6 @@ void setLedForTime(int minute, int hour, int seconds)
 
       for (int repetition = 0; repetition < sentenceRepetitions; repetition++)
       {
-        
 
         int cnt = 0;
 
@@ -1067,7 +1098,7 @@ void setLedForTime(int minute, int hour, int seconds)
 
           int delay = cnt * timeForWord;
           myAnimationController.addAnimation(Animation((*wordIter)->getLeds((*wordIter)->digitsToRemove), wordColor, 80, delay));
-          myAnimationController.addAnimation(Animation((*wordIter)->getLeds((*wordIter)->digitsToRemove), backgroundColor, 100, delay + timeForWord -200));
+          myAnimationController.addAnimation(Animation((*wordIter)->getLeds((*wordIter)->digitsToRemove), backgroundColor, 100, delay + timeForWord - 200));
         }
       }
     }
@@ -1143,7 +1174,16 @@ void setLedForTime(int minute, int hour, int seconds)
 
     break;
 
-    case (7): //
+    case (7): // "closing door"
+
+      break;
+    
+
+    case (8): // "closing triangles"
+
+        
+
+
 
       break;
     }
@@ -1245,15 +1285,17 @@ static const char responseHTML[] =
     "<label for=\"wordColor\">Wörter Farbe:  </label>"
     "<input type= \"color\" id = \"wordColor\" name=\"wordColor\" value=\"#%02X%02X%02X\" required>"
     "</li>"
-    /*
+   
     "<li>"
+    /*
     <label for="animationMode">AnimationsArt:</label>
       <select id="animationMode" name="mode">
         <option value="1">Synchron Fade all</option>
         <option value="2">Fade after each other</option>
       </select>
+      */
     "</li>"
-    */
+    
     " <li>"
     "<input type=\"submit\" value=\"Ok\">"
     "</li>"
@@ -1266,28 +1308,33 @@ void getFormatedHTMLResponse(char *string, int _h, int _m, uint8_t _wordColor[],
   sprintf(string, responseHTML, _h, _m, _backgroundColor[0], _backgroundColor[1], _backgroundColor[2], _wordColor[0], _wordColor[1], _wordColor[2]);
 }
 
-void setupAndStartWifi()
+
+String splitString(String data, char separator, int index)
 {
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length() - 1;
 
-  const String WSSID = "WordClockSetup";
-  const String PASS = "12345677654321";
+  for (int i = 0; i <= maxIndex && found <= index; i++)
+  {
+    if (data.charAt(i) == separator || i == maxIndex)
+    {
+      found++;
+      strIndex[0] = strIndex[1] + 1;
+      strIndex[1] = (i == maxIndex) ? i + 1 : i;
+    }
+  }
 
-  WiFi.mode(WIFI_AP);
-  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-  WiFi.softAP(WSSID, PASS, 1, true, 1);
+  return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
+}
 
-  // reply to all ip requests with ip of this device
-  dnsServer.start(DNS_PORT, "*", apIP);
 
-  //replay to all requests with same HTML
-  webServer.onNotFound([]() {
-    char formatedString[sizeof(responseHTML)];
+void returnWithHTML(){
+
+char formatedString[sizeof(responseHTML)];
     getFormatedHTMLResponse(formatedString, h, m, wordColor.raw, backgroundColor.raw);
     webServer.send(200, "text/html", formatedString);
-  });
-  webServer.on("/timeentered", handleTimeForm);
 
-  webServer.begin();
 }
 
 void handleTimeForm()
@@ -1312,23 +1359,27 @@ void handleTimeForm()
   webServer.send(200, "text/html", formatedString);
 }
 
-String splitString(String data, char separator, int index)
+
+
+
+void setupAndStartWifi()
 {
-  int found = 0;
-  int strIndex[] = {0, -1};
-  int maxIndex = data.length() - 1;
 
-  for (int i = 0; i <= maxIndex && found <= index; i++)
-  {
-    if (data.charAt(i) == separator || i == maxIndex)
-    {
-      found++;
-      strIndex[0] = strIndex[1] + 1;
-      strIndex[1] = (i == maxIndex) ? i + 1 : i;
-    }
-  }
+  const String WSSID = "WordClockSetup";
+  const String PASS = "12345677654321";
 
-  return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
+  WiFi.mode(WIFI_AP);
+  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+  WiFi.softAP(WSSID, PASS, 1, true, 1);
+
+  // reply to all ip requests with ip of this device
+  dnsServer.start(DNS_PORT, "*", apIP);
+
+  //replay to all requests with same HTML
+  //webServer.onNotFound(returnWithHTML);
+  //webServer.on("/timeentered", handleTimeForm);
+
+  webServer.begin();
 }
 
 //-----------------------Standard Arduino --------------------------------
@@ -1345,7 +1396,7 @@ void setup()
   //Serial.println("Words created");
   myAnimationController.init();
   myLedController->turnAllOn(CRGB::Black); // show that every Led is working
-  FastLED.setBrightness(170);
+  FastLED.setBrightness(220);
 
   delay(3000);
   // put your setup code here, to run once:
@@ -1358,7 +1409,7 @@ int ypos = 7;
 void loop()
 {
 
-  if (lastIncrease + 3000 < millis())
+  if (lastIncrease + 300 < millis())
   {
 
     lastIncrease = millis();
@@ -1378,6 +1429,28 @@ void loop()
       }
     }
 
+    int randX = random(0, 14);
+      int randYstart = random(0, 8);
+      int randomLength = random(3, 15);
+      int randomFadeOutDelay = random(1000, 3000);
+      int randomContinueDelay = random(100, 600);
+
+      byte cnt = 0;
+
+      for (int y = randYstart; y < randYstart + randomLength; y++)
+      {
+
+        int delay = randomContinueDelay * cnt;
+
+        CRGB *led = myLedController->getLEDatXY(randX, y);
+
+        myAnimationController.addAnimation(Animation(led, CRGB::Black, 5, delay + 50 + randomFadeOutDelay));
+        myAnimationController.addAnimation(Animation(led, CRGB::DarkOliveGreen, 5, delay + 50));
+        myAnimationController.addAnimation(Animation(led, CRGB::White, 5, delay));
+
+        cnt++;
+      }
+
     //setLedForTime(m, h, s);
   }
   /*
@@ -1391,7 +1464,8 @@ void loop()
     myLedController->output();
   }
   myAnimationController.tick();
-
+  
   dnsServer.processNextRequest();
   webServer.handleClient();
+
 }

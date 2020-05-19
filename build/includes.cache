@@ -11,26 +11,251 @@
   },
   {
     "Sourcefile": "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH \u0026 Co. KG\\Projekte\\WordClock\\Arduino\\build\\sketch\\LEDController.ino.cpp",
+    "Include": "ArduinoSTL.h",
+    "Includepath": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src"
+  },
+  {
+    "Sourcefile": "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH \u0026 Co. KG\\Projekte\\WordClock\\Arduino\\build\\sketch\\LEDController.ino.cpp",
     "Include": "FastLED.h",
     "Includepath": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\FastLED-master"
   },
   {
     "Sourcefile": "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH \u0026 Co. KG\\Projekte\\WordClock\\Arduino\\build\\sketch\\LEDController.ino.cpp",
-    "Include": "ESP8266WiFi.h",
-    "Includepath": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src"
+    "Include": "",
+    "Includepath": null
   },
   {
-    "Sourcefile": "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH \u0026 Co. KG\\Projekte\\WordClock\\Arduino\\build\\sketch\\LEDController.ino.cpp",
-    "Include": "DNSServer.h",
-    "Includepath": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\DNSServer\\src"
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\ArduinoSTL.cpp",
+    "Include": "",
+    "Includepath": null
   },
   {
-    "Sourcefile": "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH \u0026 Co. KG\\Projekte\\WordClock\\Arduino\\build\\sketch\\LEDController.ino.cpp",
-    "Include": "ESP8266WebServer.h",
-    "Includepath": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WebServer\\src"
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\abi\\abi.cpp",
+    "Include": "",
+    "Includepath": null
   },
   {
-    "Sourcefile": "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH \u0026 Co. KG\\Projekte\\WordClock\\Arduino\\build\\sketch\\LEDController.ino.cpp",
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\algorithm.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\associative_base.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\bitset.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\char_traits.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\complex.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\del_op.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\del_opnt.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\del_ops.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\del_opv.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\del_opvnt.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\del_opvs.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\deque.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\eh_alloc.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\eh_globals.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\exception.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\func_exception.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\iomanip.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\ios.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\iostream.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\istream.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\iterator.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\limits.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\list.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\locale.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\map.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\new_handler.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\new_op.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\new_opnt.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\new_opv.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\new_opvnt.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\numeric.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\ostream.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\ostream_helpers.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\queue.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\set.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\sstream.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\stack.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\stdexcept.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\streambuf.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\string.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\support.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\typeinfo.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\utility.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\valarray.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\ArduinoSTL\\src\\vector.cpp",
     "Include": "",
     "Includepath": null
   },
@@ -81,96 +306,6 @@
   },
   {
     "Sourcefile": "C:\\Users\\Sven Weinert\\Documents\\Arduino\\libraries\\FastLED-master\\wiring.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\BearSSLHelpers.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\CertStoreBearSSL.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\ESP8266WiFi.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\ESP8266WiFiAP.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\ESP8266WiFiGeneric.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\ESP8266WiFiMulti.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\ESP8266WiFiSTA-WPS.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\ESP8266WiFiSTA.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\ESP8266WiFiScan.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\WiFiClient.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\WiFiClientSecureAxTLS.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\WiFiClientSecureBearSSL.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\WiFiServer.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\WiFiServerSecureAxTLS.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\WiFiServerSecureBearSSL.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WiFi\\src\\WiFiUdp.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\DNSServer\\src\\DNSServer.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.6.3\\libraries\\ESP8266WebServer\\src\\detail\\mimetable.cpp",
     "Include": "",
     "Includepath": null
   }

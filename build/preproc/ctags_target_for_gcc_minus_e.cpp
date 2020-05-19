@@ -1,24 +1,31 @@
 # 1 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino"
-//#define FASTLED_ALLOW_INTERRUPTS 0#
+# 2 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino" 2
+
+
 
 //overwrite PROGMEM for ESP01 to correctly save String (Char array) on External flash
 
 
 //-----------------------LED-Controller-------------------------------------
-//#include <StandardCplusplus.h>
-//#include <zip.h>
-# 10 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino" 2
-# 11 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino" 2
-# 12 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino" 2
 
-//------------------------WEB Server-----------------------------------------
+//#include <zip.h>
+//#include <StandardCplusplus.h>
+//#include <vector.cpp>
+
 # 15 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino" 2
 # 16 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino" 2
-# 17 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino" 2
 
+//------------------------WEB Server-----------------------------------------
+/*
 
+#include <ESP8266WiFi.h>
 
+#include <DNSServer.h>
 
+#include <ESP8266WebServer.h>
+
+*/
+# 25 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino"
 CRGB leds[225];
 
 class AnimationController;
@@ -30,7 +37,7 @@ class WordController;
 
 class LEDController
 {
-   CRGB* getLEDatXY();
+  CRGB *getLEDatXY();
 
 public:
   LEDController()
@@ -76,8 +83,7 @@ public:
   }
 
   std::vector<CRGB *> getLeds(int startIndex, int endIndex)
-  { // todo check richtung .. manchmal erster buchstabe ist großer als letzer
-
+  {
     std::vector<CRGB *> returnVector;
 
     if (startIndex < endIndex)
@@ -112,46 +118,87 @@ public:
     return allLedsVec;
   }
 
-  std::vector<CRGB*> getSquareLeds(int distFromCenter){
-    std::vector<CRGB*> returnVector;
-    int maxEdgeLenght = sqrt(225)-1;
+  std::vector<CRGB *> getSquareLeds(int distFromCenter)
+  {
+    std::vector<CRGB *> returnVector;
+    int maxEdgeLenght = sqrt(225) - 1;
     int center = maxEdgeLenght / 2;
 
-    int selectedEdgeLength = distFromCenter * 2+1;
+    int selectedEdgeLength = distFromCenter * 2 + 1;
 
-    int leftTopEdge = center - (selectedEdgeLength-1)/2;
-    int rightBottomEdge = center + (selectedEdgeLength-1)/2;
+    int leftTopEdge = center - (selectedEdgeLength - 1) / 2;
+    int rightBottomEdge = center + (selectedEdgeLength - 1) / 2;
 
-    for(int x = leftTopEdge; x <= rightBottomEdge; x++){
-
-      if(x == leftTopEdge || x == rightBottomEdge){ // first or Last Row -> take all y -> left or right edge of square
-        for(int y = leftTopEdge; y <= rightBottomEdge; y++){
-          returnVector.push_back(getLEDatXY(x,y));
-        }
-      }else{ // somewhere in center -> only top and bottom y -> Top / bottom maxEdgeLenght
-        returnVector.push_back(getLEDatXY(x, leftTopEdge));
-        returnVector.push_back(getLEDatXY(x, rightBottomEdge));
-      }
+    for (int x = leftTopEdge; x <= rightBottomEdge; x++)
+    {
+      returnVector.push_back(getLEDatXY(x, leftTopEdge));
     }
+    for (int y = leftTopEdge; y <= rightBottomEdge; y++)
+    {
+      returnVector.push_back(getLEDatXY(rightBottomEdge, y));
+    }
+
+    for (int x = rightBottomEdge; x >= leftTopEdge; x--)
+    {
+      returnVector.push_back(getLEDatXY(x, rightBottomEdge));
+    }
+
+    for (int y = rightBottomEdge; y >= leftTopEdge; y--)
+    {
+      returnVector.push_back(getLEDatXY(leftTopEdge, y));
+    }
+
     return returnVector;
   }
 
   // Get single LED -> X/Y 0/0 is top left
-  CRGB* getLEDatXY(int x, int y){
+  CRGB *getLEDatXY(int x, int y)
+  {
 
-      bool isRLrow = y%2; // true if y is uneven -> Led index is from right to Left in this isRLrow
-      int index;
+    bool isRLrow = y % 2; // true if y is uneven -> Led index is from right to Left in this isRLrow
+    int index;
 
-      int x0;
-       x0 = 225 -(15*(y + 1)); // set x0 corrosponding to current y row
-      if(isRLrow){
-        x0 += 14; // if row index is from Right to Left -> add 14 to start to adjust x0
-        index = x0-x;
-      }else{
-        index = x0+x;
-      }
+    int x0;
+    x0 = 225 - (15 * (y + 1)); // set x0 corrosponding to current y row
+    if (isRLrow)
+    {
+      x0 += 14; // if row index is from Right to Left -> add 14 to start to adjust x0
+      index = x0 - x;
+    }
+    else
+    {
+      index = x0 + x;
+    }
 
     return &leds[index];
+  }
+
+  // return one line on pixels (0 is top or left) orientation 0 -> horizontal 1-> vertical
+  // length of line (only odd umbers) 1,3,5...
+  std::vector<CRGB *> getLineLeds(int index, int orientation, int length = 15)
+  {
+    std::vector<CRGB *> returnVector;
+    int center = 7;
+    int oneSideDist = floor(length/2);
+
+    if (!orientation)
+    { // horizontal x line
+
+      for (int x = center-oneSideDist; x <= center + oneSideDist; x++)
+      {
+        returnVector.push_back(getLEDatXY(x, index));
+      }
+    }
+    else
+    { //vertical y line
+
+      for (int y = center - oneSideDist; y <= center + oneSideDist; y++)
+      {
+        returnVector.push_back(getLEDatXY(index, y));
+      }
+    }
+
+    return returnVector;
   }
 
   void output()
@@ -163,7 +210,7 @@ public:
 class Word
 {
 
-  public:
+public:
   std::vector<CRGB *> wordLeds; // Maybe remove vector and remve classic array -> size on constuctor with vector length
   CRGB color = CRGB::White;
 
@@ -209,7 +256,7 @@ class Word
 class WordConfiguration
 {
 
-  public:
+public:
   Word *word;
   byte digitsToRemove = 0; // digits to turn off from push_back
   CRGB color;
@@ -255,7 +302,7 @@ class WordController
   std::vector<Word *> hoursSecondDigitWords;
   std::vector<Word *> fillWords;
 
-  public:
+public:
   WordController()
   {
   }
@@ -327,7 +374,7 @@ class WordController
         break;
       case 1:
 
-          returnVector.push_back(new WordConfiguration(minutesFirstDigitWords.at(0))); // "eine"
+        returnVector.push_back(new WordConfiguration(minutesFirstDigitWords.at(0))); // "eine"
 
         if (zehner > 1)
         {
@@ -354,22 +401,22 @@ class WordController
         break;
       }
 
+      switch (zehner)
+      {
+      case 0:
 
-    switch (zehner)
-    {
-    case 0:
-
-      break;
-    case 1:
-      returnVector.push_back(new WordConfiguration(minutesFirstDigitWords.at(9)));
-      break;
-    default:
-      if(einer != 0){
-       returnVector.push_back(new WordConfiguration(andWords.at(0)));
+        break;
+      case 1:
+        returnVector.push_back(new WordConfiguration(minutesFirstDigitWords.at(9)));
+        break;
+      default:
+        if (einer != 0)
+        {
+          returnVector.push_back(new WordConfiguration(andWords.at(0)));
+        }
+        returnVector.push_back(new WordConfiguration(minutesSecondDigitWords.at(zehner - 2)));
+        break;
       }
-      returnVector.push_back(new WordConfiguration(minutesSecondDigitWords.at(zehner - 2)));
-      break;
-    }
     }
 
     return returnVector;
@@ -388,7 +435,8 @@ class WordController
     else if (hour == 1)
     {
       returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(0))); //ein
-      if(isOclock) returnVector.at(0)->digitsToRemove = 1;
+      if (isOclock)
+        returnVector.at(0)->digitsToRemove = 1;
     }
     else if (hour <= 12)
     {
@@ -639,20 +687,8 @@ class WordController
       }
 
       */
-# 636 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino"
+# 681 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino"
     return returnVector;
-  }
-};
-
-class PixelAnimation
-{
-  std::vector<CRGB *> isLED;
-  std::vector<CHSV> _setLED;
-  int startTime;
-  int duration;
-
-  void tick()
-  {
   }
 };
 
@@ -665,11 +701,11 @@ class Animation
   int _endTime;
   int _duration = -1;
   int _delay = 0;
-  int lastPerzentagTimePassed = 0;
+  byte lastPerzentagTimePassed = 0;
   bool _endless;
   bool didTickBefore = false;
 
-  public:
+public:
   std::vector<CRGB *> isLED;
   bool _animationDone = false;
   int iD = -1;
@@ -707,17 +743,30 @@ class Animation
     _endless = endless;
     startTime = millis() + _delay;
     _endTime = startTime + _duration;
+  }
 
+  Animation(CRGB *led, CRGB ledSetColor, int duration = 500, int delay = 0, bool endless = false)
+  {
+    isLED.push_back(led);
+
+    _setLED = ledSetColor;
+    _delay = delay;
+    _duration = duration;
+    _endless = endless;
+    startTime = millis() + _delay;
+    _endTime = startTime + _duration;
   }
 
   bool tick()
   {
     int currentTime = millis();
-    if(currentTime <= startTime){ // return if animation shouldnt start because of set delay
+    if (currentTime <= startTime)
+    { // return if animation shouldnt start because of set delay
       return false;
     }
 
-    if(isLED.empty()){
+    if (isLED.empty())
+    {
       _animationDone = true;
       return false;
     }
@@ -747,7 +796,7 @@ class Animation
             else
             {
               setStartEndTiming(_duration);
-              _setLED += _setLED ;
+              _setLED += _setLED;
             }
           }
           else
@@ -792,7 +841,7 @@ class Animation
       Serial.println(updateColor[2]);
 
       */
-# 771 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino"
+# 817 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino"
             CRGB newColor(updateColor[0], updateColor[1], updateColor[2]);
 
             **isLedIter = newColor;
@@ -802,16 +851,19 @@ class Animation
       }
     }
 
-    if(didTickBefore){
-       return false;
-    }else{
+    if (didTickBefore)
+    {
+      return false;
+    }
+    else
+    {
       didTickBefore = true;
       return true;
     }
-
   }
 
-  bool isRunning(){
+  bool isRunning()
+  {
     return didTickBefore;
   }
 
@@ -822,20 +874,22 @@ class Animation
     _endTime = startTime + _duration;
   }
 
-  bool deleteDouble(CRGB* newLed){
-    for(std::vector<CRGB*>::iterator currentLediter = isLED.begin(); currentLediter != isLED.end();){
-      if(*currentLediter == newLed){
+  bool deleteDouble(CRGB *newLed)
+  {
+    for (std::vector<CRGB *>::iterator currentLediter = isLED.begin(); currentLediter != isLED.end();)
+    {
+      if (*currentLediter == newLed)
+      {
         isLED.erase(currentLediter);
-        isLED.shrink_to_fit();
         return true;
-      }else
+      }
+      else
       {
         currentLediter++;
       }
     }
     return false;
   }
-
 };
 
 class AnimationController
@@ -844,52 +898,63 @@ class AnimationController
   LEDController *_myLedController;
   std::vector<Animation> myAnimations;
 
-  public:
+public:
   AnimationController(LEDController *myLedController)
   {
     _myLedController = myLedController;
   }
 
+  void init()
+  {
+    myAnimations.reserve(600);
+    // Serial.println(myAnimations.capacity());
+    // Serial.println(myAnimations.size());
+  }
+
   void tick()
   {
     int currentMillis = millis();
+
     // tick each pixel and word animation
     // change difference slowly between set and is
 
-      for (std::vector<Animation>::iterator iter = myAnimations.begin(); iter != myAnimations.end();)
+    for (std::vector<Animation>::iterator iter = myAnimations.begin(); iter != myAnimations.end();)
     {
-
+      iter->iD = std::distance(myAnimations.begin(), iter);
       if ((*iter)._animationDone)
       {
         iter = myAnimations.erase(iter);
-      }else{
+      }
+      else
+      {
         iter++;
       }
     }
-      myAnimations.shrink_to_fit();
 
-    for (std::vector<Animation>::iterator iter = myAnimations.begin(); iter != myAnimations.end();iter++)
+    for (std::vector<Animation>::iterator iter = myAnimations.begin(); iter != myAnimations.end(); iter++)
     {
-        if((*iter).tick()){// Animation ticks -> returns true if animation is startet for the first time -> check for doubles
+      if ((*iter).tick())
+      { // Animation ticks -> returns true if animation is startet for the first time -> check for doubles
 
-          for(std::vector<Animation>::iterator animationIterator = myAnimations.begin(); animationIterator != myAnimations.end(); animationIterator++){
+        for (std::vector<Animation>::iterator animationIterator = myAnimations.begin(); animationIterator != myAnimations.end(); animationIterator++)
+        {
 
-            if(animationIterator->iD != iter->iD && animationIterator->isRunning()){ // check to not delete current pixels from current animation
+          if (animationIterator->iD != iter->iD && animationIterator->isRunning())
+          { // check to not delete current pixels from current animation
 
-              for(CRGB* newPixel : iter->isLED){
-                animationIterator->deleteDouble(newPixel);
-              }
+            for (CRGB *newPixel : iter->isLED)
+            {
+              animationIterator->deleteDouble(newPixel);
             }
-
           }
         }
+      }
     }
-
   }
 
   void addAnimation(Animation anim)
   { // check if each pixel in the word is in an word or pixel animation and delete it from there
-    anim.iD = myAnimations.size();
+
     myAnimations.push_back(anim);
   }
 
@@ -920,11 +985,10 @@ AnimationController myAnimationController = AnimationController(myLedController)
 
 WordController *myWordController = new WordController();
 
-
 std::vector<std::vector<WordConfiguration *>> possibleSentences;
 
 void setupWordControllerWithWords()
-  {
+{
   //Serial.println("start adding Words");
   myWordController->addbasicWord(new Word(myLedController->getLeds(211, 212))); // Es
   //Serial.println("first word added");
@@ -1033,30 +1097,124 @@ void setLedForTime(int minute, int hour, int seconds)
   {
     lastSentenceID = sentenceID;
 
-    switch(animationMode){
+    switch (animationMode)
+    {
 
-      case(0): // "normal" mode for each sentence all Words are faded in, old will fade out // TODO remove or dont display "x minuten vor/ nach halb" da nicht möglich anzuzeigen
-        myAnimationController.addAnimation(Animation(myLedController->getAllLeds(), backgroundColor,2000));
-        myAnimationController.addAnimation(Animation(possibleSentences.at(sentenceID),wordColor, 2000));
+    case (0): // "normal" mode for each sentence all Words are faded in, old will fade out // TODO remove or dont display "x minuten vor/ nach halb" da nicht möglich anzuzeigen
+      myAnimationController.addAnimation(Animation(myLedController->getAllLeds(), backgroundColor, 2000));
+      myAnimationController.addAnimation(Animation(possibleSentences.at(sentenceID), wordColor, 2000));
       break;
 
-      case(1): // "reading" mode -> sentence is played in loop until next sentence and within loop, each word will show and dimm in reading order
+    case (1): // "reading" mode -> sentence is played in loop until next sentence and within loop, each word will show and dimm in reading order
+    {
+      std::vector<WordConfiguration *> sentence = possibleSentences.at(sentenceID);
+
+      int wordCnt = sentence.size();
+      int readingTimeForWord = 500;
+
+      byte sentenceRepetitions = floor((secondsForEachSentence * 1000) / (wordCnt * readingTimeForWord));
+
+      int timeForWord = (secondsForEachSentence * 1000) / (sentenceRepetitions * wordCnt);
+
+      for (int repetition = 0; repetition < sentenceRepetitions; repetition++)
+      {
+
+        int cnt = 0;
+
+        for (std::vector<WordConfiguration *>::iterator wordIter = sentence.begin(); wordIter < sentence.end(); wordIter++, cnt++)
+        {
+
+          int delay = cnt * timeForWord;
+          myAnimationController.addAnimation(Animation((*wordIter)->getLeds((*wordIter)->digitsToRemove), wordColor, 80, delay));
+          myAnimationController.addAnimation(Animation((*wordIter)->getLeds((*wordIter)->digitsToRemove), backgroundColor, 100, delay + timeForWord - 200));
+        }
+      }
+    }
+
+    break;
+
+    case (2): // "Raining" ->  Words that should turn on, are falling from top in random order
+
+      break;
+    case (3): // "Snake" ->  One Pixel is moving across the screen (circular pattern) and pixel with correspondig word are kept on
+    {
+      int outerDist = 7;
+      int cnt = 0;
+      uint8_t r = random8();
+      uint8_t g = random8();
+      uint8_t b = random8();
+      for (int x = outerDist; x >= 0; x--)
+      {
+        std::vector<CRGB *> leds = myLedController->getSquareLeds(x);
+        leds.pop_back();
+
+        int index = 0;
+        for (std::vector<CRGB *>::iterator ledIter = leds.begin(); ledIter != leds.end(); ledIter++)
+        {
+          int delay = cnt * 10;
+          myAnimationController.addAnimation(Animation(*ledIter, CRGB(r, g, b), 10, delay));
+          myAnimationController.addAnimation(Animation(*ledIter, CRGB::Black, 300, delay + 400));
+          cnt++;
+          index++;
+        }
+      }
+    }
+    break;
+
+    case (4): // "Square" -> square gets bigger from center and clears all Leds, when get smaller to center again, new sentence stay on
+    {
+      uint8_t r = random8();
+      uint8_t g = random8();
+      uint8_t b = random8();
+      for (int i = 0; i < 8; i++)
+      {
+        myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(i), CRGB(r, g, b), 100, i * 100));
+        myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(i), CRGB::Black, 400, (i * 100) + 100));
+      }
+    }
+    break;
+
+    case (6): // "Matrix" -> random x position , random fadeouttime(diffrent tracelengths)
+    {
+
+      int randX = random(0, 14);
+      int randYstart = random(0, 8);
+      int randomLength = random(3, 15);
+      int randomFadeOutDelay = random(1000, 3000);
+      int randomContinueDelay = random(100, 600);
+
+      byte cnt = 0;
+
+      for (int y = randYstart; y < randYstart + randomLength; y++)
+      {
+
+        int delay = randomContinueDelay * cnt;
+
+        CRGB *led = myLedController->getLEDatXY(randX, y);
+
+        myAnimationController.addAnimation(Animation(led, CRGB::Black, 5, delay + 50 + randomFadeOutDelay));
+        myAnimationController.addAnimation(Animation(led, CRGB::DarkOliveGreen, 5, delay + 50));
+        myAnimationController.addAnimation(Animation(led, CRGB::White, 5, delay));
+
+        cnt++;
+      }
+    }
+
+    break;
+
+    case (7): // "closing door"
 
       break;
 
-      case(2): // "Raining" ->  Words that should turn on, are falling from top in random order
 
-      break;
-      case(3): // "Snake" ->  One Pixel is moving across the screen (circular pattern) and pixel with correspondig word are kept on
+    case (8): // "closing triangles"
 
-      break;
 
-      case(4): // "Square" -> square gets bigger from center and clears all Leds, when get smaller to center again, new sentence stay on
+
+
 
       break;
     }
-
-
 
     //trigger Animation with WconfigVector and decide wich Animation
     //myAnimationController.startAnimation(possibleSentences.at(sentenceID), AnimationController::ANIMATION_ALL_ON_OTHER_OFF, 1000);
@@ -1111,76 +1269,86 @@ int h = 8;
 int m = 0;
 int s = 0;
 
-void setNewTime(int newH, int newM){
+void setNewTime(int newH, int newM)
+{
   h = newH;
   m = newM;
   s = 0;
   setLedForTime(m, h, s);
 }
 
-
-
 //-------------------------------WebServer-----------------------
-
-
-
+/*
 
 const byte DNS_PORT = 53;
+
 IPAddress apIP(172, 217, 28, 1);
+
 DNSServer dnsServer;
+
 ESP8266WebServer webServer(80);
 
-   static const char responseHTML[] =
-  /*
 
-                      "<!DOCTYPE html><html lang='de'><head>"
 
-                      "<meta name='viewport' content='width=device-width'>"
+static const char responseHTML[] =
 
-                      "<title>Uhrzeit einstellen</title></head><body>"
 
-                      "<form action=\"/timeentered\">"
 
-                      "<label for=\"appt\">Uhrzeit einstellen:  </label>"
+    "<!DOCTYPE html><html lang='de'><head>"
 
-                      "<input type=\"time\" id=\"timeform\" name=\"clockTime\" autofocus required>"
-
-                      "<input type=\"submit\" value=\"Ok\">"
-
-                      "</form>"
-
-                      "</body></html>";
-
-*/
-# 1120 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino"
-  "<!DOCTYPE html><html lang='de'><head>"
     "<meta name='viewport' content='width=device-width'>"
+
     "<style>"
-        "li{"
-            "list-style-type: none;"
-            "border-color: white;"
-            "border-style: solid;"
-            "text-align: center;"
-     "   }"
+
+    "li{"
+
+    "list-style-type: none;"
+
+    "border-color: white;"
+
+    "border-style: solid;"
+
+    "text-align: center;"
+
+    "   }"
+
     "</style>"
+
     "</head>"
+
     "<body>"
+
     "<form action=\"/timeentered\">"
+
     "<ul>"
+
     "<li>"
-        "<h1>WordClock Configurator</h1>"
-        "<label for=\"timeform\">Uhrzeit einstellen:  </label>"
-        "<input type=\"time\" id=\"timeform\" name=\"clockTime\" value=\"%02i:%02i\" autofocus required>"
+
+    "<h1>WordClock Configurator</h1>"
+
+    "<label for=\"timeform\">Uhrzeit einstellen:  </label>"
+
+    "<input type=\"time\" id=\"timeform\" name=\"clockTime\" value=\"%02i:%02i\" autofocus required>"
+
     "</li>"
+
     "<li>"
-        "<label for=\"background\">Hintergrund Farbe:  </label>"
-        "<input type= \"color\" id = \"backgroundColor\" name=\"backgroundColor\" value =\"#%02X%02X%02X\" required>"
+
+    "<label for=\"background\">Hintergrund Farbe:  </label>"
+
+    "<input type= \"color\" id = \"backgroundColor\" name=\"backgroundColor\" value =\"#%02X%02X%02X\" required>"
+
     "</li>"
+
     "<li>"
-        "<label for=\"wordColor\">Wörter Farbe:  </label>"
-        "<input type= \"color\" id = \"wordColor\" name=\"wordColor\" value=\"#%02X%02X%02X\" required>"
+
+    "<label for=\"wordColor\">Wörter Farbe:  </label>"
+
+    "<input type= \"color\" id = \"wordColor\" name=\"wordColor\" value=\"#%02X%02X%02X\" required>"
+
     "</li>"
-    /*
+
+   
 
     "<li>"
 
@@ -1196,40 +1364,73 @@ ESP8266WebServer webServer(80);
 
     "</li>"
 
-    */
-# 1156 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino"
-   " <li>"
-        "<input type=\"submit\" value=\"Ok\">"
+    
+
+    " <li>"
+
+    "<input type=\"submit\" value=\"Ok\">"
+
     "</li>"
+
     "</ul>"
+
     "</form>"
+
     "</body></html>";
 
-void getFormatedHTMLResponse(char* string, int _h, int _m , uint8_t _wordColor[], uint8_t _backgroundColor[]){
 
-  sprintf(string, responseHTML, _h,_m,_backgroundColor[0],_backgroundColor[1],_backgroundColor[2],_wordColor[0],_wordColor[1],_wordColor[2]);
-  Serial.println(string);
+
+void getFormatedHTMLResponse(char *string, int _h, int _m, uint8_t _wordColor[], uint8_t _backgroundColor[])
+
+{
+
+  sprintf(string, responseHTML, _h, _m, _backgroundColor[0], _backgroundColor[1], _backgroundColor[2], _wordColor[0], _wordColor[1], _wordColor[2]);
+
 }
 
-void setupAndStartWifi(){
+
+
+void setupAndStartWifi()
+
+{
+
+
 
   const String WSSID = "WordClockSetup";
+
   const String PASS = "12345677654321";
 
+
+
   WiFi.mode(WIFI_AP);
+
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-  WiFi.softAP(WSSID,PASS,1, true, 1);
+
+  WiFi.softAP(WSSID, PASS, 1, true, 1);
+
+
 
   // reply to all ip requests with ip of this device
+
   dnsServer.start(DNS_PORT, "*", apIP);
 
+
+
   //replay to all requests with same HTML
+
   webServer.onNotFound([]() {
+
     char formatedString[sizeof(responseHTML)];
-    getFormatedHTMLResponse(formatedString,h,m, wordColor.raw, backgroundColor.raw);
+
+    getFormatedHTMLResponse(formatedString, h, m, wordColor.raw, backgroundColor.raw);
+
     webServer.send(200, "text/html", formatedString);
+
   });
+
   webServer.on("/timeentered", handleTimeForm);
+
+
 
   webServer.begin();
 
@@ -1237,90 +1438,140 @@ void setupAndStartWifi(){
 
 
 
-void handleTimeForm(){
+void handleTimeForm()
+
+{
+
   String s = webServer.arg("clockTime");
 
+
+
   String hstring = splitString(s, ':', 0);
+
   String mstring = splitString(s, ':', 1);
 
+
+
   int hNumber = hstring.toInt();
+
   int mNumber = mstring.toInt();
+
   setNewTime(hNumber, mNumber);
 
 
+
   String _wordColor = webServer.arg("wordColor");
+
   String _backgroundColor = webServer.arg("backgroundColor");
 
-  wordColor = CRGB((int) strtoll(&_wordColor[1],__null, 16));
-  backgroundColor = CRGB((int) strtoll(&_backgroundColor[1],__null, 16));
+
+
+  wordColor = CRGB((int)strtoll(&_wordColor[1], NULL, 16));
+
+  backgroundColor = CRGB((int)strtoll(&_backgroundColor[1], NULL, 16));
+
+
 
   char formatedString[sizeof(responseHTML)];
-    getFormatedHTMLResponse(formatedString,h,m, wordColor.raw, backgroundColor.raw);
+
+  getFormatedHTMLResponse(formatedString, h, m, wordColor.raw, backgroundColor.raw);
+
   webServer.send(200, "text/html", formatedString);
+
 }
+
+
 
 String splitString(String data, char separator, int index)
-{
-  int found = 0;
-  int strIndex[] = {0, -1};
-  int maxIndex = data.length()-1;
 
-  for(int i=0; i<=maxIndex && found<=index; i++){
-    if(data.charAt(i)==separator || i==maxIndex){
-        found++;
-        strIndex[0] = strIndex[1]+1;
-        strIndex[1] = (i == maxIndex) ? i+1 : i;
+{
+
+  int found = 0;
+
+  int strIndex[] = {0, -1};
+
+  int maxIndex = data.length() - 1;
+
+
+
+  for (int i = 0; i <= maxIndex && found <= index; i++)
+
+  {
+
+    if (data.charAt(i) == separator || i == maxIndex)
+
+    {
+
+      found++;
+
+      strIndex[0] = strIndex[1] + 1;
+
+      strIndex[1] = (i == maxIndex) ? i + 1 : i;
+
     }
+
   }
 
-  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
+
+
+  return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
+
 }
 
+*/
+# 1374 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino"
 //-----------------------Standard Arduino --------------------------------
-
-
 
 void setup()
 {
 
-
   Serial.begin(115200);
-  setupAndStartWifi();
+  //setupAndStartWifi();
 
   myLedController->setup(); // disable for debug // Add leds to FastLED Library
   //Serial.println("Setup Done");
   setupWordControllerWithWords(); // Vectoren mit Wörten füllen (mappen von led indexen)
   //Serial.println("Words created");
+  myAnimationController.init();
   myLedController->turnAllOn(CRGB::Black); // show that every Led is working
-  FastLED.setBrightness(200);
+  FastLED.setBrightness(170);
 
   delay(3000);
   // put your setup code here, to run once:
 }
 
-
 int lastIncrease = 0;
+int xpos = 7;
+int ypos = 7;
+
 void loop()
 {
 
-  if(lastIncrease + 1100 < millis()){
+  if (lastIncrease + 3000 < millis())
+  {
+
     lastIncrease = millis();
     s++;
-    if(s >59){
+    if (s > 59)
+    {
       s = 0;
       m++;
-      if(m>59){
-        m=0;
+      if (m > 59)
+      {
+        m = 0;
         h++;
-        if(h>23){
-          h=0;
+        if (h > 23)
+        {
+          h = 0;
         }
       }
     }
 
-   /*
+    //setLedForTime(m, h, s);
+  }
+  /*
 
-    Serial.print("Heap:  ");
+     Serial.print("Heap:  ");
 
     Serial.print(ESP.getFreeHeap());
 
@@ -1328,32 +1579,19 @@ void loop()
 
     Serial.println(ESP.getFreeContStack());
 
-    */
-# 1282 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino"
-    //setLedForTime(m, h, s);
-
-    uint8_t r = random8();
-    uint8_t g = random8();
-    uint8_t b = random8();
-    for(int i = 0 ; i < 8; i++){
-       myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(i), CRGB(r,g,b), 100, i*100));
-       myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(i), CRGB::Black, 400, (i*100)+100));
-    }
-
-    //printLEDDataSerial();
-  }
-
-
-
-
-
-
-  if(millis()%15 == 0){
-  myLedController->output();
+*/
+# 1429 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino"
+  if (millis() % 15 == 0)
+  {
+    myLedController->output();
   }
   myAnimationController.tick();
-
+  /*
 
   dnsServer.processNextRequest();
+
   webServer.handleClient();
+
+*/
+# 1438 "c:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\LEDController\\LEDController.ino"
 }
