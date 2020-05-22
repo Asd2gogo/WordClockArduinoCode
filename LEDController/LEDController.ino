@@ -1,6 +1,8 @@
 //#include <ArduinoSTL.h>
 
 #define FASTLED_ALLOW_INTERRUPTS 0
+#define ANIMATION_SIZE 700
+#define LED_UPDATE_DELAY 19
 
 //overwrite PROGMEM for ESP01 to correctly save String (Char array) on External flash
 #define PROGMEM ICACHE_RODATA_ATTR
@@ -9,10 +11,10 @@
 
 //#include <zip.h>
 //#include <StandardCplusplus.h>
-//#include <vector.cpp>
+#include <vector>
 
-#include <FastLED.h>
 //#include <arduino.h>
+#include <FastLED.h>
 
 //------------------------WEB Server-----------------------------------------
 
@@ -175,12 +177,12 @@ public:
   {
     std::vector<CRGB *> returnVector;
     int center = 7;
-    int oneSideDist = floor(length/2);
+    int oneSideDist = floor(length / 2);
 
     if (!orientation)
     { // horizontal x line
 
-      for (int x = center-oneSideDist; x <= center + oneSideDist; x++)
+      for (int x = center - oneSideDist; x <= center + oneSideDist; x++)
       {
         returnVector.push_back(getLEDatXY(x, index));
       }
@@ -287,6 +289,7 @@ public:
 class WordController
 {
 
+public:
   std::vector<Word *> allWords;
   std::vector<Word *> basicWords;
   std::vector<Word *> minutesFirstDigitWords;
@@ -298,7 +301,6 @@ class WordController
   std::vector<Word *> hoursSecondDigitWords;
   std::vector<Word *> fillWords;
 
-public:
   WordController()
   {
   }
@@ -687,7 +689,7 @@ class Animation
 
   CRGB _setLED;
 
-  int startTime;
+  unsigned long startTime;
   int _endTime;
   int _duration = -1;
   int _delay = 0;
@@ -749,9 +751,9 @@ public:
 
   bool tick()
   {
-    int currentTime = millis();
+    unsigned long currentTime = millis();
     if (currentTime <= startTime)
-    { // return if animation shouldnt start because of set delay
+    { // return if animation shouldn´t start because of set delay
       return false;
     }
 
@@ -796,24 +798,7 @@ public:
             int deltaColor[] = {(int)_setLED.r - (int)isColor.r, (int)_setLED.g - (int)isColor.g, (int)_setLED.b - (int)isColor.b};
             int totalDeltaColor[] = {(100 * deltaColor[0]) / perzentageTimeToGo, (100 * deltaColor[1]) / perzentageTimeToGo, (100 * deltaColor[2]) / perzentageTimeToGo};
             int updateColor[] = {(int)isColor.r + (totalDeltaColor[0] / 100), (int)isColor.g + (totalDeltaColor[1] / 100), (int)isColor.b + (totalDeltaColor[2] / 100)};
-            /*
-      Serial.print("time To Go: ");
-      Serial.println(perzentageTimeToGo);
-      Serial.print("isColor: ");
-      Serial.println(isColor.val);
 
-      Serial.print("setColor: ");
-      Serial.println(_setLED.val);
-
-      
-
-      Serial.print("deltaColor: ");
-      Serial.println(deltaColor[2]);
-      Serial.print("totalDeltaColor: ");
-      Serial.println(totalDeltaColor[2]);
-      Serial.print("updateColor: ");
-      Serial.println(updateColor[2]);
-      */
             CRGB newColor(updateColor[0], updateColor[1], updateColor[2]);
 
             **isLedIter = newColor;
@@ -878,21 +863,21 @@ public:
 
   void init()
   {
-    myAnimations.reserve(600);
+    // myAnimations.reserve(ANIMATION_SIZE);
     // Serial.println(myAnimations.capacity());
     // Serial.println(myAnimations.size());
   }
 
   void tick()
   {
-    int currentMillis = millis();
+    unsigned long currentMillis = millis();
 
     // tick each pixel and word animation
     // change difference slowly between set and is
 
     for (std::vector<Animation>::iterator iter = myAnimations.begin(); iter != myAnimations.end();)
     {
-      iter->iD = std::distance(myAnimations.begin(), iter);
+      //iter->iD = std::distance(myAnimations.begin(), iter);
       if ((*iter)._animationDone)
       {
         iter = myAnimations.erase(iter);
@@ -903,31 +888,58 @@ public:
       }
     }
 
-    for (std::vector<Animation>::iterator iter = myAnimations.begin(); iter != myAnimations.end(); iter++)
+    int cnt = 0;
+    int cntMax = 0;
+    for (std::vector<Animation>::iterator iter = myAnimations.begin(); iter != myAnimations.end(); cnt++, iter++)
     {
-      if ((*iter).tick())
-      { // Animation ticks -> returns true if animation is startet for the first time -> check for doubles
+      iter->iD = cnt;
+      if (cntMax < cnt)
+        cntMax = cnt;
+      //Serial.println(iter->iD);
+    }
 
+    for (std::vector<Animation>::iterator tickAnimationIter = myAnimations.begin(); tickAnimationIter != myAnimations.end(); tickAnimationIter++)
+    {
+      ESP.wdtFeed();
+      if ((*tickAnimationIter).tick())
+      { // Animation ticks -> returns true if animation is startet for the first time -> check for doubles
+        // Serial.print(iter->iD);
+        //Serial.println("  is a new Animation");
         for (std::vector<Animation>::iterator animationIterator = myAnimations.begin(); animationIterator != myAnimations.end(); animationIterator++)
         {
-
-          if (animationIterator->iD != iter->iD && animationIterator->isRunning())
+          //Serial.print("Going to check ID:  ");
+          //Serial.println(animationIterator->iD);
+          if (animationIterator->iD != tickAnimationIter->iD && animationIterator->isRunning())
           { // check to not delete current pixels from current animation
 
-            for (CRGB *newPixel : iter->isLED)
+            for (CRGB *newPixel : tickAnimationIter->isLED)
             {
+              // Serial.print("Going to delete Doube in: ");
+              //Serial.println(animationIterator->iD);
               animationIterator->deleteDouble(newPixel);
             }
+          }
+          //return from inner check loop and go to tick next animation in total
+          if (animationIterator->iD == cntMax)
+          {
+            break;
           }
         }
       }
     }
+    //Serial.println("AnimationTick Done");
   }
 
   void addAnimation(Animation anim)
   { // check if each pixel in the word is in an word or pixel animation and delete it from there
-
-    myAnimations.push_back(anim);
+    if (myAnimations.size() < ANIMATION_SIZE)
+    {
+      myAnimations.push_back(anim);
+    }
+    else
+    {
+      Serial.println("Animation full");
+    }
   }
 
   void setToRandom(std::vector<CRGB *> leds, byte brightness)
@@ -949,6 +961,11 @@ public:
         myAnimations.erase(iter);
       }
     }
+  }
+
+  int getAnimationCount()
+  {
+    return myAnimations.size();
   }
 };
 
@@ -1044,6 +1061,7 @@ int lastMinute = -1;
 int lastSentenceID = -1;
 int sentencesCount;
 int animationMode = 0;
+bool forceReadingMode = false;
 CRGB backgroundColor = CRGB::Gray;
 CRGB wordColor = CRGB::Red;
 
@@ -1069,19 +1087,44 @@ void setLedForTime(int minute, int hour, int seconds)
   {
     lastSentenceID = sentenceID;
 
+    std::vector<WordConfiguration *> activeSentence = possibleSentences.at(sentenceID);
+
+    // check if sentence is "Minuten vor / nach Halb" -> force reading mode
+    forceReadingMode = false;
+    for (WordConfiguration *config : activeSentence)
+    {
+      if(config->word == myWordController->basicWords.at(2)){ // "minutes" is included
+                                                          // now check again for also "halb"
+        for (WordConfiguration *secondConfig : activeSentence)
+        {
+             if(secondConfig->word == myWordController->quaterWords.at(1)){ // halb is included
+            forceReadingMode = true;
+             }
+        }
+      }
+    }
+
+    if (forceReadingMode)
+    {
+      animationMode = 1;
+    }
+    else
+    {
+      animationMode = random(0, 4);
+    }
+
     switch (animationMode)
     {
 
     case (0): // "normal" mode for each sentence all Words are faded in, old will fade out // TODO remove or dont display "x minuten vor/ nach halb" da nicht möglich anzuzeigen
       myAnimationController.addAnimation(Animation(myLedController->getAllLeds(), backgroundColor, 2000));
-      myAnimationController.addAnimation(Animation(possibleSentences.at(sentenceID), wordColor, 2000));
+      myAnimationController.addAnimation(Animation(activeSentence, wordColor, 2000));
       break;
 
     case (1): // "reading" mode -> sentence is played in loop until next sentence and within loop, each word will show and dimm in reading order
     {
-      std::vector<WordConfiguration *> sentence = possibleSentences.at(sentenceID);
 
-      int wordCnt = sentence.size();
+      int wordCnt = activeSentence.size();
       int readingTimeForWord = 500;
 
       byte sentenceRepetitions = floor((secondsForEachSentence * 1000) / (wordCnt * readingTimeForWord));
@@ -1093,7 +1136,7 @@ void setLedForTime(int minute, int hour, int seconds)
 
         int cnt = 0;
 
-        for (std::vector<WordConfiguration *>::iterator wordIter = sentence.begin(); wordIter < sentence.end(); wordIter++, cnt++)
+        for (std::vector<WordConfiguration *>::iterator wordIter = activeSentence.begin(); wordIter < activeSentence.end(); wordIter++, cnt++)
         {
 
           int delay = cnt * timeForWord;
@@ -1118,14 +1161,39 @@ void setLedForTime(int minute, int hour, int seconds)
       for (int x = outerDist; x >= 0; x--)
       {
         std::vector<CRGB *> leds = myLedController->getSquareLeds(x);
-        leds.pop_back();
+        leds.pop_back(); // remove last LED -> a snake is not a square
 
         int index = 0;
         for (std::vector<CRGB *>::iterator ledIter = leds.begin(); ledIter != leds.end(); ledIter++)
         {
           int delay = cnt * 10;
+          int isLedOfSetWord = false;
           myAnimationController.addAnimation(Animation(*ledIter, CRGB(r, g, b), 10, delay));
-          myAnimationController.addAnimation(Animation(*ledIter, CRGB::Black, 300, delay + 400));
+
+          // check if current led is part of a new word, so it shouldnt turn off, but to the set wordColor
+          for (WordConfiguration *wordConfig : activeSentence)
+          {
+            if (isLedOfSetWord)
+              break; // if led is already found in activeSentence -> continue
+            for (CRGB *led : wordConfig->getLeds())
+            {
+              if (led == *ledIter)
+              {
+                isLedOfSetWord = true;
+                break;
+              }
+            }
+          }
+
+          if (isLedOfSetWord)
+          {
+            myAnimationController.addAnimation(Animation(*ledIter, wordColor, 300, delay + 400));
+          }
+          else
+          {
+            myAnimationController.addAnimation(Animation(*ledIter, CRGB::Black, 300, delay + 400));
+          }
+
           cnt++;
           index++;
         }
@@ -1140,13 +1208,36 @@ void setLedForTime(int minute, int hour, int seconds)
       uint8_t b = random8();
       for (int i = 0; i < 8; i++)
       {
-        myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(i), CRGB(r, g, b), 100, i * 100));
-        myAnimationController.addAnimation(Animation(myLedController->getSquareLeds(i), CRGB::Black, 400, (i * 100) + 100));
+        std::vector<CRGB *> squareLeds = myLedController->getSquareLeds(i);
+        myAnimationController.addAnimation(Animation(squareLeds, CRGB(r, g, b), 100, i * 100));
+
+        int isLedOfSetWord = false;
+
+        for (CRGB *squareLed : squareLeds)
+        {
+
+          for (WordConfiguration *wordConfig : activeSentence)
+          {
+
+            for (CRGB *led : wordConfig->getLeds())
+            {
+              if (led == squareLed)
+              {
+                myAnimationController.addAnimation(Animation(squareLed, wordColor, 400, (i * 100) + 100));
+                goto continueWithNextLed;
+              }
+            }
+          }
+
+          myAnimationController.addAnimation(Animation(squareLed, CRGB::Black, 400, (i * 100) + 100));
+
+        continueWithNextLed:;
+        }
       }
     }
     break;
 
-    case (6): // "Matrix" -> random x position , random fadeouttime(diffrent tracelengths)
+    case (5): // "Matrix" -> random x position , random fadeouttime(diffrent tracelengths)
     {
 
       int randX = random(0, 14);
@@ -1164,9 +1255,9 @@ void setLedForTime(int minute, int hour, int seconds)
 
         CRGB *led = myLedController->getLEDatXY(randX, y);
 
-        myAnimationController.addAnimation(Animation(led, CRGB::Black, 5, delay + 50 + randomFadeOutDelay));
-        myAnimationController.addAnimation(Animation(led, CRGB::DarkOliveGreen, 5, delay + 50));
-        myAnimationController.addAnimation(Animation(led, CRGB::White, 5, delay));
+        myAnimationController.addAnimation(Animation(led, CRGB::Black, 80, delay + 50 + randomFadeOutDelay));
+        myAnimationController.addAnimation(Animation(led, CRGB::DarkGreen, 80, delay + 100));
+        myAnimationController.addAnimation(Animation(led, CRGB::LightGreen, 80, delay));
 
         cnt++;
       }
@@ -1174,16 +1265,11 @@ void setLedForTime(int minute, int hour, int seconds)
 
     break;
 
-    case (7): // "closing door"
+    case (6): // "closing door"
 
       break;
-    
 
-    case (8): // "closing triangles"
-
-        
-
-
+    case (7): // "closing triangles"
 
       break;
     }
@@ -1255,6 +1341,7 @@ const byte DNS_PORT = 53;
 IPAddress apIP(172, 217, 28, 1);
 DNSServer dnsServer;
 ESP8266WebServer webServer(80);
+//ESP8266HTTPUpdateServer httpUpdater;
 
 static const char responseHTML[] =
 
@@ -1282,10 +1369,10 @@ static const char responseHTML[] =
     "<input type= \"color\" id = \"backgroundColor\" name=\"backgroundColor\" value =\"#%02X%02X%02X\" required>"
     "</li>"
     "<li>"
-    "<label for=\"wordColor\">Wörter Farbe:  </label>"
+    "<label for=\"wordColor\">Woerter Farbe:  </label>"
     "<input type= \"color\" id = \"wordColor\" name=\"wordColor\" value=\"#%02X%02X%02X\" required>"
     "</li>"
-   
+
     "<li>"
     /*
     <label for="animationMode">AnimationsArt:</label>
@@ -1295,7 +1382,7 @@ static const char responseHTML[] =
       </select>
       */
     "</li>"
-    
+
     " <li>"
     "<input type=\"submit\" value=\"Ok\">"
     "</li>"
@@ -1307,7 +1394,6 @@ void getFormatedHTMLResponse(char *string, int _h, int _m, uint8_t _wordColor[],
 {
   sprintf(string, responseHTML, _h, _m, _backgroundColor[0], _backgroundColor[1], _backgroundColor[2], _wordColor[0], _wordColor[1], _wordColor[2]);
 }
-
 
 String splitString(String data, char separator, int index)
 {
@@ -1328,13 +1414,12 @@ String splitString(String data, char separator, int index)
   return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
+void returnWithHTML()
+{
 
-void returnWithHTML(){
-
-char formatedString[sizeof(responseHTML)];
-    getFormatedHTMLResponse(formatedString, h, m, wordColor.raw, backgroundColor.raw);
-    webServer.send(200, "text/html", formatedString);
-
+  char formatedString[sizeof(responseHTML)];
+  getFormatedHTMLResponse(formatedString, h, m, wordColor.raw, backgroundColor.raw);
+  webServer.send(200, "text/html", formatedString);
 }
 
 void handleTimeForm()
@@ -1359,9 +1444,6 @@ void handleTimeForm()
   webServer.send(200, "text/html", formatedString);
 }
 
-
-
-
 void setupAndStartWifi()
 {
 
@@ -1376,9 +1458,9 @@ void setupAndStartWifi()
   dnsServer.start(DNS_PORT, "*", apIP);
 
   //replay to all requests with same HTML
-  //webServer.onNotFound(returnWithHTML);
-  //webServer.on("/timeentered", handleTimeForm);
-
+  webServer.onNotFound(returnWithHTML);
+  webServer.on("/timeentered", handleTimeForm);
+  //httpUpdater.setup(&webServer);
   webServer.begin();
 }
 
@@ -1398,7 +1480,8 @@ void setup()
   myLedController->turnAllOn(CRGB::Black); // show that every Led is working
   FastLED.setBrightness(220);
 
-  delay(3000);
+  delay(1000);
+  Serial.println("booted");
   // put your setup code here, to run once:
 }
 
@@ -1408,8 +1491,9 @@ int ypos = 7;
 
 void loop()
 {
+  static unsigned long lastLedUpdate = 0;
 
-  if (lastIncrease + 300 < millis())
+  if (lastIncrease + 1000 < millis())
   {
 
     lastIncrease = millis();
@@ -1429,43 +1513,28 @@ void loop()
       }
     }
 
-    int randX = random(0, 14);
-      int randYstart = random(0, 8);
-      int randomLength = random(3, 15);
-      int randomFadeOutDelay = random(1000, 3000);
-      int randomContinueDelay = random(100, 600);
-
-      byte cnt = 0;
-
-      for (int y = randYstart; y < randYstart + randomLength; y++)
-      {
-
-        int delay = randomContinueDelay * cnt;
-
-        CRGB *led = myLedController->getLEDatXY(randX, y);
-
-        myAnimationController.addAnimation(Animation(led, CRGB::Black, 5, delay + 50 + randomFadeOutDelay));
-        myAnimationController.addAnimation(Animation(led, CRGB::DarkOliveGreen, 5, delay + 50));
-        myAnimationController.addAnimation(Animation(led, CRGB::White, 5, delay));
-
-        cnt++;
-      }
-
-    //setLedForTime(m, h, s);
+    setLedForTime(m, h, s);
   }
-  /*
-     Serial.print("Heap:  ");
-    Serial.print(ESP.getFreeHeap());
-    Serial.print("  Stack:  ");
-    Serial.println(ESP.getFreeContStack());
+/*
+  Serial.print("Heap:  ");
+  Serial.print(ESP.getFreeHeap());
+  Serial.print("  HeapFragmentation:  ");
+  Serial.print(ESP.getHeapFragmentation());
+  Serial.print("  Heap MaxBlockSize:  ");
+  Serial.print(ESP.getMaxFreeBlockSize());
+
+  Serial.print("  Stack:  ");
+  Serial.println(ESP.getFreeContStack());
+  Serial.print("AnimationCount: ");
+  Serial.println(myAnimationController.getAnimationCount());
 */
-  if (millis() % 15 == 0)
+  if (millis() > lastLedUpdate + LED_UPDATE_DELAY)
   {
+    lastLedUpdate = millis();
     myLedController->output();
   }
-  myAnimationController.tick();
-  
-  dnsServer.processNextRequest();
-  webServer.handleClient();
 
+  myAnimationController.tick();
+  //webServer.handleClient();
+  //dnsServer.processNextRequest();
 }
