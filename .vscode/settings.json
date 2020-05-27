@@ -64,7 +64,8 @@
         "system_error": "cpp",
         "tuple": "cpp",
         "utility": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "*.inc": "cpp"
     },
     "spellright.language": [
         "de",

@@ -266,10 +266,12 @@ public:
     color = c;
   }
 
-  std::vector<CRGB *> getLeds(int _digitsToRemove = 0)
+  std::vector<CRGB *> getLeds(int _digitsToRemove = -1)
   {
 
     std::vector<CRGB *> leds;
+    if(_digitsToRemove = -1) _digitsToRemove = digitsToRemove;
+
     for (int i = 0; i < word->wordLeds.size() - _digitsToRemove; i++)
     {
       leds.push_back(word->wordLeds.at(i));
@@ -377,7 +379,7 @@ public:
         if (zehner > 1)
         {
           returnVector.at(0)->digitsToRemove = 1; // convert "eine" zu "ein"
-          returnVector.push_back(new WordConfiguration(andWords.at(0)));
+          // returnVector.push_back(new WordConfiguration(andWords.at(0)));// "und" // commented out .. was double "und"
         }
         break;
       case 6:
@@ -442,12 +444,12 @@ public:
     }
     else if (hour == 16)
     {
-      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(5))); // sech
+      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(5), 1)); // sech
       returnVector.at(0)->digitsToRemove = 1;
     }
     else if (hour == 17)
     {
-      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(6))); //7
+      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(6), 2)); //7
       returnVector.at(0)->digitsToRemove = 2;
     }
     else if (hour <= 20)
@@ -456,7 +458,7 @@ public:
     }
     else if (hour == 21)
     {
-      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(0))); //ein
+      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(0), 1)); //ein
       returnVector.at(0)->digitsToRemove = 1;
     }
     else if (hour > 21)
@@ -497,6 +499,10 @@ public:
     { // oClock
 
       std::vector<WordConfiguration *> hourWords = getHourWords(hour, true);
+
+      timeOClockWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
+      timeOClockWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+
       for (std::vector<WordConfiguration *>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
       {
         timeOClockWords.push_back(*pIterator);
@@ -508,6 +514,10 @@ public:
     { // before next hour / after current hour
 
       //Minutes before next Hour "fuenf zehn Minuten vor zehn"
+
+      timeMinutesBeforeWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
+      timeMinutesBeforeWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+
       int minutesBeforeNextHour = (60 - minute);
       std::vector<WordConfiguration *> minutesWords = getMinutsWords(minutesBeforeNextHour);
       for (std::vector<WordConfiguration *>::iterator pIterator = minutesWords.begin(); pIterator != minutesWords.end(); ++pIterator)
@@ -533,6 +543,9 @@ public:
 
       std::vector<WordConfiguration *> minuteWords = getMinutsWords(minute);
 
+      timeMinutesPastWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
+      timeMinutesPastWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+
       for (std::vector<WordConfiguration *>::iterator pIterator = minuteWords.begin(); pIterator != minuteWords.end(); ++pIterator)
       { // x (Minuten)
         timeMinutesPastWords.push_back(*pIterator);
@@ -556,6 +569,9 @@ public:
     { // viertel nach current hour // viertel nextHour
 
       //"viertel nach eins"
+      timeQuaterWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+
       timeQuaterWords.push_back(new WordConfiguration(quaterWords.at(0))); // viertel
 
       timeQuaterWords.push_back(new WordConfiguration(beforeAfterWords.at(1))); // nach
@@ -570,6 +586,9 @@ public:
       }
 
       // "Viertel zwei"
+      timeQuaterEastWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterEastWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+
       timeQuaterEastWords.push_back(new WordConfiguration(quaterWords.at(0))); // viertel
 
       int nextHour = hour + 1;
@@ -578,13 +597,17 @@ public:
 
       for (std::vector<WordConfiguration *>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
       {
-        timeQuaterWords.push_back(*pIterator);
+        timeQuaterEastWords.push_back(*pIterator);
       }
     }
 
     if (minute == 30)
     { // halb
       //"Halb drei"
+
+      timeQuaterWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+
       timeQuaterWords.push_back(new WordConfiguration(quaterWords.at(1))); // halb
       int nextHour = hour + 1;
       int twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3
@@ -599,6 +622,9 @@ public:
 
     if (minute == 45)
     { // viertel vor next hour // dreiviertel nextHour
+
+      timeQuaterWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
 
       timeQuaterWords.push_back(new WordConfiguration(quaterWords.at(0))); // viertel
 
@@ -615,6 +641,8 @@ public:
       }
 
       // "drei viertel zwei"
+      timeQuaterEastWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterEastWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
 
       timeQuaterEastWords.push_back(new WordConfiguration(minutesFirstDigitWords.at(2))); // drei
       timeQuaterEastWords.push_back(new WordConfiguration(quaterWords.at(0)));            // viertel
@@ -627,6 +655,9 @@ public:
 
     if ((minute >= 15) && (minute <= 45))
     { // minutes before / after halb
+
+      timeMiutesBeforeAfterHalfWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
+      timeMiutesBeforeAfterHalfWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
 
       //"zehn Minuten vor Halb drei"
       int deltaMinutes = abs(minute - 30);
@@ -666,14 +697,14 @@ public:
       returnVector.push_back(timeOClockWords);
     if (timeMiutesBeforeAfterHalfWords.size() > 0)
       returnVector.push_back(timeMiutesBeforeAfterHalfWords);
-
+    /*
     for (int index = 0; index < returnVector.size(); index++)
     {
       std::vector<WordConfiguration *> *vector = &returnVector.at(index);
       vector->push_back(new WordConfiguration(basicWords.at(0))); //Es
       vector->push_back(new WordConfiguration(basicWords.at(1))); //ist
     }
-
+*/
     /*
       else{
         std::vector<std::vector<WordConfiguration>>::iterator itr = std::find(returnVector.begin(), returnVector.end(), vector); // find vector in returnVector
@@ -863,9 +894,14 @@ public:
 
   void init()
   {
-    // myAnimations.reserve(ANIMATION_SIZE);
+    myAnimations.reserve(ANIMATION_SIZE);
     // Serial.println(myAnimations.capacity());
     // Serial.println(myAnimations.size());
+  }
+
+  void clearAllAnimations()
+  {
+    myAnimations.clear();
   }
 
   void tick()
@@ -877,7 +913,7 @@ public:
 
     for (std::vector<Animation>::iterator iter = myAnimations.begin(); iter != myAnimations.end();)
     {
-      //iter->iD = std::distance(myAnimations.begin(), iter);
+
       if ((*iter)._animationDone)
       {
         iter = myAnimations.erase(iter);
@@ -901,6 +937,7 @@ public:
     for (std::vector<Animation>::iterator tickAnimationIter = myAnimations.begin(); tickAnimationIter != myAnimations.end(); tickAnimationIter++)
     {
       ESP.wdtFeed();
+      yield();
       if ((*tickAnimationIter).tick())
       { // Animation ticks -> returns true if animation is startet for the first time -> check for doubles
         // Serial.print(iter->iD);
@@ -1062,12 +1099,12 @@ int lastSentenceID = -1;
 int sentencesCount;
 int animationMode = 0;
 bool forceReadingMode = false;
-CRGB backgroundColor = CRGB::Gray;
+CRGB backgroundColor = CRGB::Blue;
 CRGB wordColor = CRGB::Red;
 
-void setLedForTime(int minute, int hour, int seconds)
+void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
 {
-  if (lastMinute != minute)
+  if (lastMinute != minute || forceUpdate)
   {
     sentencesCount = 0;
     lastMinute = minute;
@@ -1083,7 +1120,7 @@ void setLedForTime(int minute, int hour, int seconds)
   int sentenceID = floor(seconds / secondsForEachSentence);
   int cnt = 0;
 
-  if (lastSentenceID != sentenceID)
+  if (lastSentenceID != sentenceID || forceUpdate)
   {
     lastSentenceID = sentenceID;
 
@@ -1093,13 +1130,15 @@ void setLedForTime(int minute, int hour, int seconds)
     forceReadingMode = false;
     for (WordConfiguration *config : activeSentence)
     {
-      if(config->word == myWordController->basicWords.at(2)){ // "minutes" is included
-                                                          // now check again for also "halb"
+      if (config->word == myWordController->basicWords.at(2))
+      { // "minutes" is included
+        // now check again for also "halb"
         for (WordConfiguration *secondConfig : activeSentence)
         {
-             if(secondConfig->word == myWordController->quaterWords.at(1)){ // halb is included
+          if (secondConfig->word == myWordController->quaterWords.at(1))
+          { // halb is included
             forceReadingMode = true;
-             }
+          }
         }
       }
     }
@@ -1110,22 +1149,27 @@ void setLedForTime(int minute, int hour, int seconds)
     }
     else
     {
-      animationMode = random(0, 4);
+      animationMode = random(0, 5); // 0 to 4
     }
 
     switch (animationMode)
     {
 
     case (0): // "normal" mode for each sentence all Words are faded in, old will fade out // TODO remove or dont display "x minuten vor/ nach halb" da nicht möglich anzuzeigen
-      myAnimationController.addAnimation(Animation(myLedController->getAllLeds(), backgroundColor, 2000));
-      myAnimationController.addAnimation(Animation(activeSentence, wordColor, 2000));
-      break;
+    {
+      myAnimationController.clearAllAnimations();
+      myAnimationController.addAnimation(Animation(myLedController->getAllLeds(), backgroundColor, 1000));
+      myAnimationController.addAnimation(Animation(activeSentence, wordColor, 1000, 500));
+    }
+    break;
 
     case (1): // "reading" mode -> sentence is played in loop until next sentence and within loop, each word will show and dimm in reading order
     {
-
+      myAnimationController.clearAllAnimations();
       int wordCnt = activeSentence.size();
-      int readingTimeForWord = 500;
+      int readingTimeForWord = 600;
+      int fadeOutDelay = 500;
+      myAnimationController.addAnimation(Animation(myLedController->getAllLeds(), backgroundColor, fadeOutDelay));
 
       byte sentenceRepetitions = floor((secondsForEachSentence * 1000) / (wordCnt * readingTimeForWord));
 
@@ -1140,24 +1184,23 @@ void setLedForTime(int minute, int hour, int seconds)
         {
 
           int delay = cnt * timeForWord;
-          myAnimationController.addAnimation(Animation((*wordIter)->getLeds((*wordIter)->digitsToRemove), wordColor, 80, delay));
-          myAnimationController.addAnimation(Animation((*wordIter)->getLeds((*wordIter)->digitsToRemove), backgroundColor, 100, delay + timeForWord - 200));
+          delay += ((secondsForEachSentence * 1000) / sentenceRepetitions) * repetition;
+          myAnimationController.addAnimation(Animation((*wordIter)->getLeds((*wordIter)->digitsToRemove), wordColor, 80, delay + fadeOutDelay));
+          myAnimationController.addAnimation(Animation((*wordIter)->getLeds((*wordIter)->digitsToRemove), backgroundColor, 100, delay + timeForWord - 200 + fadeOutDelay));
         }
       }
     }
 
     break;
 
-    case (2): // "Raining" ->  Words that should turn on, are falling from top in random order
-
-      break;
-    case (3): // "Snake" ->  One Pixel is moving across the screen (circular pattern) and pixel with correspondig word are kept on
+    case (2): // "Snake" ->  One Pixel is moving across the screen (circular pattern) and pixel with correspondig word are kept on
     {
       int outerDist = 7;
       int cnt = 0;
       uint8_t r = random8();
       uint8_t g = random8();
       uint8_t b = random8();
+      myAnimationController.clearAllAnimations();
       for (int x = outerDist; x >= 0; x--)
       {
         std::vector<CRGB *> leds = myLedController->getSquareLeds(x);
@@ -1191,7 +1234,7 @@ void setLedForTime(int minute, int hour, int seconds)
           }
           else
           {
-            myAnimationController.addAnimation(Animation(*ledIter, CRGB::Black, 300, delay + 400));
+            myAnimationController.addAnimation(Animation(*ledIter, backgroundColor, 300, delay + 400));
           }
 
           cnt++;
@@ -1201,8 +1244,9 @@ void setLedForTime(int minute, int hour, int seconds)
     }
     break;
 
-    case (4): // "Square" -> square gets bigger from center and clears all Leds, when get smaller to center again, new sentence stay on
+    case (3): // "Square" -> square gets bigger from center and clears all Leds, when get smaller to center again, new sentence stay on
     {
+      myAnimationController.clearAllAnimations();
       uint8_t r = random8();
       uint8_t g = random8();
       uint8_t b = random8();
@@ -1224,14 +1268,46 @@ void setLedForTime(int minute, int hour, int seconds)
               if (led == squareLed)
               {
                 myAnimationController.addAnimation(Animation(squareLed, wordColor, 400, (i * 100) + 100));
-                goto continueWithNextLed;
+                goto continueWithNextSquareLed;
               }
             }
           }
 
-          myAnimationController.addAnimation(Animation(squareLed, CRGB::Black, 400, (i * 100) + 100));
+          myAnimationController.addAnimation(Animation(squareLed, backgroundColor, 400, (i * 100) + 100));
 
-        continueWithNextLed:;
+        continueWithNextSquareLed:;
+        }
+      }
+    }
+    break;
+
+    case (4): // "line from left to right / top bot / right left...."
+    {
+      myAnimationController.clearAllAnimations();
+      int delay = 100;
+      int randOrientation = random(0, 2);
+      for (int x = 0; x < 15; x++)
+      {
+            std::vector<CRGB*> lineLeds = myLedController->getLineLeds(x, randOrientation);
+            myAnimationController.addAnimation(Animation(lineLeds, wordColor, 500, delay * x));
+
+        for (CRGB *lineLed : lineLeds)
+        {
+          for (WordConfiguration *wordConfig : activeSentence)
+          {
+
+            for (CRGB *led : wordConfig->getLeds())
+            {
+              if (led == lineLed)
+              {
+                myAnimationController.addAnimation(Animation(lineLed, wordColor, 400, (x * 200) + 500));
+                goto continueWithNextLineLed;
+              }
+            }
+          }
+          myAnimationController.addAnimation(Animation(lineLed, backgroundColor, 400, (x * 200) + 500));
+
+        continueWithNextLineLed:;
         }
       }
     }
@@ -1265,11 +1341,14 @@ void setLedForTime(int minute, int hour, int seconds)
 
     break;
 
-    case (6): // "closing door"
+    case (6): // "Raining" ->  Words that should turn on, are falling from top in random order
 
       break;
 
-    case (7): // "closing triangles"
+    case (7): // "closing door"
+
+      break;
+    case (8): // "closing triangles"
 
       break;
     }
@@ -1323,25 +1402,48 @@ void printLEDDataSerial()
 }
 
 //--------Variables for Handling the current Time -> will be increased in loop every 1000 millis---------
-int h = 8;
-int m = 0;
-int s = 0;
+static int h = 10;
+static int m = 0;
+static int s = 0;
 
 void setNewTime(int newH, int newM)
 {
   h = newH;
   m = newM;
   s = 0;
-  setLedForTime(m, h, s);
+  setLedForTime(m, h, s, true);
 }
 
 //-------------------------------WebServer-----------------------
 
+class MyESPWebserver : public ESP8266WebServer{
+
+public:
+ 
+ using ESP8266WebServer::ESP8266WebServer;
+  virtual ~MyESPWebserver()
+{
+if (this->_currentArgs)
+{
+delete[] this->_currentArgs;
+this->_currentArgs = nullptr;
+}
+
+if (this->_postArgs)
+{
+delete[] this->_postArgs;
+this->_postArgs = nullptr;
+}
+}
+
+
+};
+
 const byte DNS_PORT = 53;
 IPAddress apIP(172, 217, 28, 1);
 DNSServer dnsServer;
-ESP8266WebServer webServer(80);
-//ESP8266HTTPUpdateServer httpUpdater;
+//ESP8266WebServer webServer(80);
+MyESPWebserver webServer(80);
 
 static const char responseHTML[] =
 
@@ -1416,10 +1518,10 @@ String splitString(String data, char separator, int index)
 
 void returnWithHTML()
 {
-
   char formatedString[sizeof(responseHTML)];
   getFormatedHTMLResponse(formatedString, h, m, wordColor.raw, backgroundColor.raw);
   webServer.send(200, "text/html", formatedString);
+
 }
 
 void handleTimeForm()
@@ -1431,13 +1533,14 @@ void handleTimeForm()
 
   int hNumber = hstring.toInt();
   int mNumber = mstring.toInt();
-  setNewTime(hNumber, mNumber);
 
   String _wordColor = webServer.arg("wordColor");
   String _backgroundColor = webServer.arg("backgroundColor");
 
   wordColor = CRGB((int)strtoll(&_wordColor[1], NULL, 16));
   backgroundColor = CRGB((int)strtoll(&_backgroundColor[1], NULL, 16));
+
+  setNewTime(hNumber, mNumber);
 
   char formatedString[sizeof(responseHTML)];
   getFormatedHTMLResponse(formatedString, h, m, wordColor.raw, backgroundColor.raw);
@@ -1449,7 +1552,7 @@ void setupAndStartWifi()
 
   const String WSSID = "WordClockSetup";
   const String PASS = "12345677654321";
-
+  WiFi.persistent(false);
   WiFi.mode(WIFI_AP);
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
   WiFi.softAP(WSSID, PASS, 1, true, 1);
@@ -1477,15 +1580,15 @@ void setup()
   setupWordControllerWithWords(); // Vectoren mit Wörten füllen (mappen von led indexen)
   //Serial.println("Words created");
   myAnimationController.init();
-  myLedController->turnAllOn(CRGB::Black); // show that every Led is working
+  myLedController->turnAllOn(CRGB::DarkGreen); // show that every Led is working
   FastLED.setBrightness(220);
 
-  delay(1000);
+  delay(200);
   Serial.println("booted");
   // put your setup code here, to run once:
 }
 
-int lastIncrease = 0;
+unsigned long lastIncrease = 0;
 int xpos = 7;
 int ypos = 7;
 
@@ -1493,7 +1596,7 @@ void loop()
 {
   static unsigned long lastLedUpdate = 0;
 
-  if (lastIncrease + 1000 < millis())
+  if (lastIncrease + 500 < millis())
   {
 
     lastIncrease = millis();
@@ -1504,8 +1607,8 @@ void loop()
       m++;
       if (m > 59)
       {
+        h += 1;
         m = 0;
-        h++;
         if (h > 23)
         {
           h = 0;
@@ -1515,7 +1618,7 @@ void loop()
 
     setLedForTime(m, h, s);
   }
-/*
+  
   Serial.print("Heap:  ");
   Serial.print(ESP.getFreeHeap());
   Serial.print("  HeapFragmentation:  ");
@@ -1525,9 +1628,7 @@ void loop()
 
   Serial.print("  Stack:  ");
   Serial.println(ESP.getFreeContStack());
-  Serial.print("AnimationCount: ");
-  Serial.println(myAnimationController.getAnimationCount());
-*/
+
   if (millis() > lastLedUpdate + LED_UPDATE_DELAY)
   {
     lastLedUpdate = millis();
@@ -1535,6 +1636,6 @@ void loop()
   }
 
   myAnimationController.tick();
-  //webServer.handleClient();
-  //dnsServer.processNextRequest();
+  webServer.handleClient();
+  dnsServer.processNextRequest();
 }
