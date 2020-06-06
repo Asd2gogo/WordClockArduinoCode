@@ -65,7 +65,8 @@
         "tuple": "cpp",
         "utility": "cpp",
         "cinttypes": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "random": "cpp"
     },
     "spellright.language": [
         "de",
