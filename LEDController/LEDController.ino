@@ -19,7 +19,7 @@
 //------------------------WEB Server-----------------------------------------
 
 #include <ESP8266WiFi.h>
-//#include <DNSServer.h>
+#include <DNSServer.h>
 #include <ESP8266WebServer.h>
 
 #define NUM_LEDS 225
@@ -278,9 +278,10 @@ public:
 
   ~WordConfiguration()
   {
-
+/*
     delete word;
     word = NULL;
+  */
   }
 };
 
@@ -418,19 +419,19 @@ public:
     }
   }
 
-  std::vector<WordConfiguration *> getMinutsWords(int minute)
+  std::vector<WordConfiguration> getMinutsWords(int minute)
   {
-    std::vector<WordConfiguration *> returnVector;
+    std::vector<WordConfiguration> returnVector;
 
     int zehner = floor(minute / 10);
     int einer = minute % 10;
     if (minute == 11)
     {
-      returnVector.push_back(new WordConfiguration(minutesFirstDigitWords.at(10))); // "elf"
+      returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(10))); // "elf"
     }
     else if (minute == 12)
     {
-      returnVector.push_back(new WordConfiguration(minutesFirstDigitWords.at(11))); // "zwölf"
+      returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(11))); // "zwölf"
     }
     else
     {
@@ -440,30 +441,30 @@ public:
         break;
       case 1:
 
-        returnVector.push_back(new WordConfiguration(minutesFirstDigitWords.at(0))); // "eine"
+        returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(0))); // "eine"
 
         if (zehner > 1)
         {
-          returnVector.at(0)->digitsToRemove = 1; // convert "eine" zu "ein"
+          returnVector.at(0).digitsToRemove = 1; // convert "eine" zu "ein"
           // returnVector.push_back(new WordConfiguration(andWords.at(0)));// "und" // commented out .. was double "und"
         }
         break;
       case 6:
-        returnVector.push_back(new WordConfiguration(minutesFirstDigitWords.at(5)));
+        returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(5)));
         if (zehner == 1)
         {
-          returnVector.at(0)->digitsToRemove = 1;
+          returnVector.at(0).digitsToRemove = 1;
         }
         break;
       case 7:
-        returnVector.push_back(new WordConfiguration(minutesFirstDigitWords.at(6)));
+        returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(6)));
         if (zehner == 1)
         {
-          returnVector.at(0)->digitsToRemove = 2;
+          returnVector.at(0).digitsToRemove = 2;
         }
         break;
       default:
-        returnVector.push_back(new WordConfiguration(minutesFirstDigitWords.at(einer - 1)));
+        returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(einer - 1)));
         break;
       }
 
@@ -473,14 +474,14 @@ public:
 
         break;
       case 1:
-        returnVector.push_back(new WordConfiguration(minutesFirstDigitWords.at(9)));
+        returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(9)));
         break;
       default:
         if (einer != 0)
         {
-          returnVector.push_back(new WordConfiguration(andWords.at(0)));
+          returnVector.push_back( WordConfiguration(andWords.at(0)));
         }
-        returnVector.push_back(new WordConfiguration(minutesSecondDigitWords.at(zehner - 2)));
+        returnVector.push_back( WordConfiguration(minutesSecondDigitWords.at(zehner - 2)));
         break;
       }
     }
@@ -488,92 +489,92 @@ public:
     return returnVector;
   }
 
-  std::vector<WordConfiguration *> getHourWords(int hour, bool isOclock = false)
+  std::vector<WordConfiguration> getHourWords(int hour, bool isOclock = false)
   {
 
-    std::vector<WordConfiguration *> returnVector;
+    std::vector<WordConfiguration> returnVector;
     if (hour == 0)
     {
-      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(3)));  //vier
-      returnVector.push_back(new WordConfiguration(andWords.at(1)));              // und
-      returnVector.push_back(new WordConfiguration(hoursSecondDigitWords.at(0))); // zwanzig
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(3)));  //vier
+      returnVector.push_back(WordConfiguration(andWords.at(1)));              // und
+      returnVector.push_back(WordConfiguration(hoursSecondDigitWords.at(0))); // zwanzig
     }
     else if (hour == 1)
     {
-      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(0))); //ein
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(0))); //ein
       if (isOclock)
-        returnVector.at(0)->digitsToRemove = 1;
+        returnVector.at(0).digitsToRemove = 1;
     }
     else if (hour <= 12)
     {
-      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(hour - 1))); //jeweilige stunde
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(hour - 1))); //jeweilige stunde
     }
     else if (hour == 16)
     {
-      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(5), 1)); // sech
-      returnVector.at(0)->digitsToRemove = 1;
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(5), 1)); // sech
+      returnVector.at(0).digitsToRemove = 1;
     }
     else if (hour == 17)
     {
-      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(6), 2)); //7
-      returnVector.at(0)->digitsToRemove = 2;
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(6), 2)); //7
+      returnVector.at(0).digitsToRemove = 2;
     }
     else if (hour <= 20)
     {
-      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(hour - 11))); // jeweilige erster teil der stunde 3 / 4 / 5 / 6 / 8 / 9
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(hour - 11))); // jeweilige erster teil der stunde 3 / 4 / 5 / 6 / 8 / 9
     }
     else if (hour == 21)
     {
-      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(0), 1)); //ein
-      returnVector.at(0)->digitsToRemove = 1;
+      returnVector.push_back( WordConfiguration(hoursFirstDigitWords.at(0), 1)); //ein
+      returnVector.at(0).digitsToRemove = 1;
     }
     else if (hour > 21)
     {
-      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(hour - 21))); //jeweilige stunde
+      returnVector.push_back( WordConfiguration(hoursFirstDigitWords.at(hour - 21))); //jeweilige stunde
     }
 
     if (hour < 20 && hour > 12)
     {
-      returnVector.push_back(new WordConfiguration(hoursFirstDigitWords.at(9))); // zehn
+      returnVector.push_back( WordConfiguration(hoursFirstDigitWords.at(9))); // zehn
     }
     else if (hour > 20)
     {
-      returnVector.push_back(new WordConfiguration(andWords.at(1)));              //und
-      returnVector.push_back(new WordConfiguration(hoursSecondDigitWords.at(0))); //zwanzig
+      returnVector.push_back( WordConfiguration(andWords.at(1)));              //und
+      returnVector.push_back( WordConfiguration(hoursSecondDigitWords.at(0))); //zwanzig
     }
     else if (hour == 20)
     {
-      returnVector.push_back(new WordConfiguration(hoursSecondDigitWords.at(0))); //zwanzig
+      returnVector.push_back( WordConfiguration(hoursSecondDigitWords.at(0))); //zwanzig
     }
 
     return returnVector;
   }
 
-  std::vector<std::vector<WordConfiguration *>> getWordsForTime(int minute, int hour)
+  std::vector<std::vector<WordConfiguration>> getWordsForTime(int minute, int hour)
   { // return array of possible word combination to for given time
 
-    std::vector<std::vector<WordConfiguration *>> returnVector;
+    std::vector<std::vector<WordConfiguration>> returnVector;
 
-    std::vector<WordConfiguration *> timeQuaterWords;
-    std::vector<WordConfiguration *> timeQuaterEastWords;
-    std::vector<WordConfiguration *> timeMinutesPastWords;
-    std::vector<WordConfiguration *> timeMinutesBeforeWords;
-    std::vector<WordConfiguration *> timeOClockWords;
-    std::vector<WordConfiguration *> timeMiutesBeforeAfterHalfWords;
+    std::vector<WordConfiguration> timeQuaterWords;
+    std::vector<WordConfiguration> timeQuaterEastWords;
+    std::vector<WordConfiguration> timeMinutesPastWords;
+    std::vector<WordConfiguration> timeMinutesBeforeWords;
+    std::vector<WordConfiguration> timeOClockWords;
+    std::vector<WordConfiguration> timeMiutesBeforeAfterHalfWords;
 
     if (minute == 0)
     { // oClock
 
-      std::vector<WordConfiguration *> hourWords = getHourWords(hour, true);
+      std::vector<WordConfiguration> hourWords = getHourWords(hour, true);
 
-      timeOClockWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
-      timeOClockWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+      timeOClockWords.push_back(WordConfiguration(basicWords.at(0))); //Es
+      timeOClockWords.push_back(WordConfiguration(basicWords.at(1))); //ist
 
-      for (std::vector<WordConfiguration *>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
+      for (std::vector<WordConfiguration>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
       {
         timeOClockWords.push_back(*pIterator);
       }
-      timeOClockWords.push_back(new WordConfiguration(basicWords.at(3)));
+      timeOClockWords.push_back(WordConfiguration(basicWords.at(3)));
     }
 
     if (minute != 0)
@@ -581,24 +582,24 @@ public:
 
       //Minutes before next Hour "fuenf zehn Minuten vor zehn"
 
-      timeMinutesBeforeWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
-      timeMinutesBeforeWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+      timeMinutesBeforeWords.push_back(WordConfiguration(basicWords.at(0))); //Es
+      timeMinutesBeforeWords.push_back(WordConfiguration(basicWords.at(1))); //ist
 
       int minutesBeforeNextHour = (60 - minute);
-      std::vector<WordConfiguration *> minutesWords = getMinutsWords(minutesBeforeNextHour);
-      for (std::vector<WordConfiguration *>::iterator pIterator = minutesWords.begin(); pIterator != minutesWords.end(); ++pIterator)
+      std::vector<WordConfiguration> minutesWords = getMinutsWords(minutesBeforeNextHour);
+      for (std::vector<WordConfiguration>::iterator pIterator = minutesWords.begin(); pIterator != minutesWords.end(); ++pIterator)
       { // x (Minuten)
         timeMinutesBeforeWords.push_back(*pIterator);
       }
-      timeMinutesBeforeWords.push_back(new WordConfiguration(basicWords.at(2), minutesBeforeNextHour == 1 ? 1 : 0)); // Minuten
+      timeMinutesBeforeWords.push_back(WordConfiguration(basicWords.at(2), minutesBeforeNextHour == 1 ? 1 : 0)); // Minuten
 
-      timeMinutesBeforeWords.push_back(new WordConfiguration(beforeAfterWords.at(0))); // vor
+      timeMinutesBeforeWords.push_back(WordConfiguration(beforeAfterWords.at(0))); // vor
 
       int nextHour = (hour + 1) % 24;
       int twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3
-      std::vector<WordConfiguration *> hourWords = getHourWords(twelfHourFormat);
+      std::vector<WordConfiguration> hourWords = getHourWords(twelfHourFormat);
 
-      for (std::vector<WordConfiguration *>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
+      for (std::vector<WordConfiguration>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
       {
         timeMinutesBeforeWords.push_back(*pIterator);
         // add all Words necessary for the hour ("zwei und zwanzig")
@@ -607,23 +608,23 @@ public:
 
       // after current hour "fuenf und vierzig zehn Minuten nach neun"
 
-      std::vector<WordConfiguration *> minuteWords = getMinutsWords(minute);
+      std::vector<WordConfiguration> minuteWords = getMinutsWords(minute);
 
-      timeMinutesPastWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
-      timeMinutesPastWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+      timeMinutesPastWords.push_back(WordConfiguration(basicWords.at(0))); //Es
+      timeMinutesPastWords.push_back(WordConfiguration(basicWords.at(1))); //ist
 
-      for (std::vector<WordConfiguration *>::iterator pIterator = minuteWords.begin(); pIterator != minuteWords.end(); ++pIterator)
+      for (std::vector<WordConfiguration>::iterator pIterator = minuteWords.begin(); pIterator != minuteWords.end(); ++pIterator)
       { // x (Minuten)
         timeMinutesPastWords.push_back(*pIterator);
       }
-      timeMinutesPastWords.push_back(new WordConfiguration(basicWords.at(2))); // Minuten
+      timeMinutesPastWords.push_back(WordConfiguration(basicWords.at(2))); // Minuten
 
-      timeMinutesPastWords.push_back(new WordConfiguration(beforeAfterWords.at(1))); // nach
+      timeMinutesPastWords.push_back(WordConfiguration(beforeAfterWords.at(1))); // nach
 
       twelfHourFormat = (hour % 13) + floor(hour / 13); // 10 11 12 1 2 3
       hourWords = getHourWords(twelfHourFormat);
 
-      for (std::vector<WordConfiguration *>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
+      for (std::vector<WordConfiguration>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
       {
         timeMinutesPastWords.push_back(*pIterator);
         // add all Words nessesarry for the hour ("zwei und zwanzig")
@@ -635,33 +636,33 @@ public:
     { // viertel nach current hour // viertel nextHour
 
       //"viertel nach eins"
-      timeQuaterWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
-      timeQuaterWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+      timeQuaterWords.push_back(WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterWords.push_back(WordConfiguration(basicWords.at(1))); //ist
 
-      timeQuaterWords.push_back(new WordConfiguration(quaterWords.at(0))); // viertel
+      timeQuaterWords.push_back(WordConfiguration(quaterWords.at(0))); // viertel
 
-      timeQuaterWords.push_back(new WordConfiguration(beforeAfterWords.at(1))); // nach
+      timeQuaterWords.push_back(WordConfiguration(beforeAfterWords.at(1))); // nach
 
       int twelfHourFormat = (hour % 13) + floor(hour / 13); // 10 11 12 1 2 3
 
-      std::vector<WordConfiguration *> hourWords = getHourWords(twelfHourFormat);
+      std::vector<WordConfiguration> hourWords = getHourWords(twelfHourFormat);
 
-      for (std::vector<WordConfiguration *>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
+      for (std::vector<WordConfiguration>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
       {
         timeQuaterWords.push_back(*pIterator);
       }
 
       // "Viertel zwei"
-      timeQuaterEastWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
-      timeQuaterEastWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+      timeQuaterEastWords.push_back( WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterEastWords.push_back( WordConfiguration(basicWords.at(1))); //ist
 
-      timeQuaterEastWords.push_back(new WordConfiguration(quaterWords.at(0))); // viertel
+      timeQuaterEastWords.push_back( WordConfiguration(quaterWords.at(0))); // viertel
 
       int nextHour = hour + 1;
       twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3
       hourWords = getHourWords(twelfHourFormat);
 
-      for (std::vector<WordConfiguration *>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
+      for (std::vector<WordConfiguration>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
       {
         timeQuaterEastWords.push_back(*pIterator);
       }
@@ -671,16 +672,16 @@ public:
     { // halb
       //"Halb drei"
 
-      timeQuaterWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
-      timeQuaterWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+      timeQuaterWords.push_back( WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterWords.push_back( WordConfiguration(basicWords.at(1))); //ist
 
-      timeQuaterWords.push_back(new WordConfiguration(quaterWords.at(1))); // halb
+      timeQuaterWords.push_back( WordConfiguration(quaterWords.at(1))); // halb
       int nextHour = hour + 1;
       int twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3
 
-      std::vector<WordConfiguration *> hourWords = getHourWords(twelfHourFormat);
+      std::vector<WordConfiguration> hourWords = getHourWords(twelfHourFormat);
 
-      for (std::vector<WordConfiguration *>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
+      for (std::vector<WordConfiguration>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
       {
         timeQuaterWords.push_back(*pIterator);
       }
@@ -689,31 +690,31 @@ public:
     if (minute == 45)
     { // viertel vor next hour // dreiviertel nextHour
 
-      timeQuaterWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
-      timeQuaterWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+      timeQuaterWords.push_back( WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterWords.push_back( WordConfiguration(basicWords.at(1))); //ist
 
-      timeQuaterWords.push_back(new WordConfiguration(quaterWords.at(0))); // viertel
+      timeQuaterWords.push_back( WordConfiguration(quaterWords.at(0))); // viertel
 
-      timeQuaterWords.push_back(new WordConfiguration(beforeAfterWords.at(0))); // vor
+      timeQuaterWords.push_back( WordConfiguration(beforeAfterWords.at(0))); // vor
 
       int nextHour = hour + 1;
       int twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3
 
-      std::vector<WordConfiguration *> hourWords = getHourWords(twelfHourFormat);
+      std::vector<WordConfiguration> hourWords = getHourWords(twelfHourFormat);
 
-      for (std::vector<WordConfiguration *>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
+      for (std::vector<WordConfiguration>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
       {
         timeQuaterWords.push_back(*pIterator);
       }
 
       // "drei viertel zwei"
-      timeQuaterEastWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
-      timeQuaterEastWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+      timeQuaterEastWords.push_back( WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterEastWords.push_back( WordConfiguration(basicWords.at(1))); //ist
 
-      timeQuaterEastWords.push_back(new WordConfiguration(minutesFirstDigitWords.at(2))); // drei
-      timeQuaterEastWords.push_back(new WordConfiguration(quaterWords.at(0)));            // viertel
+      timeQuaterEastWords.push_back( WordConfiguration(minutesFirstDigitWords.at(2))); // drei
+      timeQuaterEastWords.push_back( WordConfiguration(quaterWords.at(0)));            // viertel
 
-      for (std::vector<WordConfiguration *>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
+      for (std::vector<WordConfiguration>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
       {
         timeQuaterEastWords.push_back(*pIterator);
       }
@@ -722,29 +723,29 @@ public:
     if ((minute >= 15) && (minute <= 45) && (minute != 30))
     { // minutes before / after halb
 
-      timeMiutesBeforeAfterHalfWords.push_back(new WordConfiguration(basicWords.at(0))); //Es
-      timeMiutesBeforeAfterHalfWords.push_back(new WordConfiguration(basicWords.at(1))); //ist
+      timeMiutesBeforeAfterHalfWords.push_back( WordConfiguration(basicWords.at(0))); //Es
+      timeMiutesBeforeAfterHalfWords.push_back( WordConfiguration(basicWords.at(1))); //ist
 
       //"zehn Minuten vor Halb drei"
       int deltaMinutes = abs(minute - 30);
 
-      std::vector<WordConfiguration *> minuteWords = getMinutsWords(deltaMinutes);
+      std::vector<WordConfiguration> minuteWords = getMinutsWords(deltaMinutes);
 
-      for (std::vector<WordConfiguration *>::iterator pIterator = minuteWords.begin(); pIterator != minuteWords.end(); ++pIterator)
+      for (std::vector<WordConfiguration>::iterator pIterator = minuteWords.begin(); pIterator != minuteWords.end(); ++pIterator)
       {
         timeMiutesBeforeAfterHalfWords.push_back(*pIterator);
         // drei, vier ....
       }
-      timeMiutesBeforeAfterHalfWords.push_back(new WordConfiguration(basicWords.at(2), deltaMinutes == 1 ? 1 : 0)); // "Minuten" // check for singular
+      timeMiutesBeforeAfterHalfWords.push_back( WordConfiguration(basicWords.at(2), deltaMinutes == 1 ? 1 : 0)); // "Minuten" // check for singular
 
-      timeMiutesBeforeAfterHalfWords.push_back(new WordConfiguration(beforeAfterWords.at(minute > 30 ? 1 : 0))); // "vor" / "nach" // check for vor or nach
-      timeMiutesBeforeAfterHalfWords.push_back(new WordConfiguration(quaterWords.at(1)));                        // "halb"
+      timeMiutesBeforeAfterHalfWords.push_back( WordConfiguration(beforeAfterWords.at(minute > 30 ? 1 : 0))); // "vor" / "nach" // check for vor or nach
+      timeMiutesBeforeAfterHalfWords.push_back( WordConfiguration(quaterWords.at(1)));                        // "halb"
 
       int nextHour = hour + 1;
       int twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3
-      std::vector<WordConfiguration *> hourWords = getHourWords(twelfHourFormat);
+      std::vector<WordConfiguration> hourWords = getHourWords(twelfHourFormat);
 
-      for (std::vector<WordConfiguration *>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
+      for (std::vector<WordConfiguration>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
       {
         timeMiutesBeforeAfterHalfWords.push_back(*pIterator);
         // "eins" // "zwei"
@@ -805,6 +806,26 @@ public:
     for (WordConfiguration *wConfig : wordConfigs)
     {
       for (CRGB *led : wConfig->getLeds(wConfig->digitsToRemove))
+      {
+        isLED.push_back(led);
+      }
+    }
+    _setLED = ledSetColor;
+
+    startTime = millis() + delay;
+    _duration = duration;
+    _delay = delay;
+    _endTime = startTime + _duration;
+    _endless = endless;
+  }
+
+
+  Animation(std::vector<WordConfiguration> wordConfigs, CRGB ledSetColor, int duration = 500, int delay = 0, bool endless = false)
+  { // add wordsVector with Leds and set Should color or color hue delta if endless is enabled
+
+    for (WordConfiguration wConfig : wordConfigs)
+    {
+      for (CRGB *led : wConfig.getLeds(wConfig.digitsToRemove))
       {
         isLED.push_back(led);
       }
@@ -1079,7 +1100,7 @@ AnimationController myAnimationController = AnimationController(myLedController)
 
 WordController *myWordController = new WordController();
 
-std::vector<std::vector<WordConfiguration *>> possibleSentences;
+std::vector<std::vector<WordConfiguration>> possibleSentences;
 
 void setupWordControllerWithWords()
 {
@@ -1181,7 +1202,7 @@ void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
     lastMinute = minute;
     possibleSentences = myWordController->getWordsForTime(minute, hour);
 
-    for (std::vector<WordConfiguration *> wConfigVec : possibleSentences)
+    for (std::vector<WordConfiguration> wConfigVec : possibleSentences)
     {
       sentencesCount++;
     }
@@ -1195,18 +1216,18 @@ void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
   {
     lastSentenceID = sentenceID;
 
-    std::vector<WordConfiguration *> activeSentence = possibleSentences.at(sentenceID);
+    std::vector<WordConfiguration > activeSentence = possibleSentences.at(sentenceID);
 
     // check if sentence is "Minuten vor / nach Halb" -> force reading mode
     forceReadingMode = false;
-    for (WordConfiguration *config : activeSentence)
+    for (WordConfiguration config : activeSentence)
     {
-      if (config->word == myWordController->basicWords.at(2))
+      if (config.word == myWordController->basicWords.at(2))
       { // "minutes" is included
         // now check again for also "halb"
-        for (WordConfiguration *secondConfig : activeSentence)
+        for (WordConfiguration secondConfig : activeSentence)
         {
-          if (secondConfig->word == myWordController->quaterWords.at(1))
+          if (secondConfig.word == myWordController->quaterWords.at(1))
           { // halb is included
             forceReadingMode = true;
           }
@@ -1220,11 +1241,10 @@ void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
     }
     else
     {
-      //animationMode = random(0, 5); // 0 to 4
-      animationMode = 5; // 0 to 4
+      animationMode = random(0, 6); // 0 to 4
+    // animationMode = 5; // 0 to 4
     }
 
-    Serial.println(animationMode);
     switch (animationMode)
     {
 
@@ -1253,13 +1273,13 @@ void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
 
         int cnt = 0;
 
-        for (std::vector<WordConfiguration *>::iterator wordIter = activeSentence.begin(); wordIter < activeSentence.end(); wordIter++, cnt++)
+        for (std::vector<WordConfiguration>::iterator wordIter = activeSentence.begin(); wordIter < activeSentence.end(); wordIter++, cnt++)
         {
 
           int delay = cnt * timeForWord;
           delay += ((secondsForEachSentence * 1000) / sentenceRepetitions) * repetition;
-          myAnimationController.addAnimation(Animation((*wordIter)->getLeds((*wordIter)->digitsToRemove), wordColor, 80, delay + fadeOutDelay));
-          myAnimationController.addAnimation(Animation((*wordIter)->getLeds((*wordIter)->digitsToRemove), backgroundColor, 100, delay + timeForWord - 200 + fadeOutDelay));
+          myAnimationController.addAnimation(Animation((*wordIter).getLeds((*wordIter).digitsToRemove), wordColor, 80, delay + fadeOutDelay));
+          myAnimationController.addAnimation(Animation((*wordIter).getLeds((*wordIter).digitsToRemove), backgroundColor, 100, delay + timeForWord - 200 + fadeOutDelay));
         }
       }
     }
@@ -1284,14 +1304,14 @@ void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
         {
           int delay = cnt * 10;
           int isLedOfSetWord = false;
-          myAnimationController.addAnimation(Animation(*ledIter, CRGB(r, g, b), 10, delay));
+          myAnimationController.addAnimation(Animation(*ledIter , CRGB(r, g, b), 10, delay));
 
           // check if current led is part of a new word, so it shouldnt turn off, but to the set wordColor
-          for (WordConfiguration *wordConfig : activeSentence)
+          for (WordConfiguration wordConfig : activeSentence)
           {
             if (isLedOfSetWord)
               break; // if led is already found in activeSentence -> continue
-            for (CRGB *led : wordConfig->getLeds())
+            for (CRGB *led : wordConfig.getLeds())
             {
               if (led == *ledIter)
               {
@@ -1333,10 +1353,10 @@ void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
         for (CRGB *squareLed : squareLeds)
         {
 
-          for (WordConfiguration *wordConfig : activeSentence)
+          for (WordConfiguration wordConfig : activeSentence)
           {
 
-            for (CRGB *led : wordConfig->getLeds())
+            for (CRGB *led : wordConfig.getLeds())
             {
               if (led == squareLed)
               {
@@ -1370,10 +1390,10 @@ void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
         for (CRGB *lineLed : lineLeds)
         {
           // now check each line led if it  is part of the new sentence and should fade to background color or stay in wordcolor
-          for (WordConfiguration *wordConfig : activeSentence)
+          for (WordConfiguration wordConfig : activeSentence)
           {
 
-            for (CRGB *led : wordConfig->getLeds())
+            for (CRGB *led : wordConfig.getLeds())
             {
               if (led == lineLed)
               {
@@ -1408,12 +1428,12 @@ void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
         }
 
         int cnt = 0;
-         for (std::vector<WordConfiguration *>::iterator wordIter = activeSentence.begin(); wordIter < activeSentence.end(); wordIter++,cnt ++)
+         for (std::vector<WordConfiguration>::iterator wordIter = activeSentence.begin(); wordIter < activeSentence.end(); wordIter++,cnt ++)
         {
 
         int randomDelay = delay * cnt + random(10,500);
-          myAnimationController.addAnimation(Animation((*wordIter)->getLeds() , CRGB(random8(),random8(),random8()),200, randomDelay));
-          myAnimationController.addAnimation(Animation((*wordIter)->getLeds(), wordColor, 600, randomDelay + 1000));
+          myAnimationController.addAnimation(Animation((*wordIter).getLeds() , CRGB(random8(),random8(),random8()),200, randomDelay));
+          myAnimationController.addAnimation(Animation((*wordIter).getLeds(), wordColor, 600, randomDelay + 1000));
 
         }
       }
@@ -1522,7 +1542,7 @@ void setNewTime(int newH, int newM)
 
 //-------------------------------WebServer-----------------------
 
-/*
+
 class MyESPWebserver : public ESP8266WebServer
 {
 
@@ -1544,10 +1564,10 @@ public:
     }
   }
 };
-*/
+
 const byte DNS_PORT = 53;
 IPAddress apIP(172, 217, 28, 1);
-//DNSServer dnsServer;
+DNSServer dnsServer;
 ESP8266WebServer webServer(80);
 //MyESPWebserver webServer(80);
 //WiFiServer webServer(80);
@@ -1704,10 +1724,11 @@ void setupAndStartWifi()
   WiFi.softAP(WSSID, PASS, 1, true, 1);
 
   // reply to all ip requests with ip of this device
-  //dnsServer.start(DNS_PORT, "*", apIP);
+  dnsServer.start(DNS_PORT, "*", apIP);
 
   //replay to all requests with same HTML
   webServer.onNotFound(returnWithHTML);
+  //webServer.on("/", returnWithHTML);
   webServer.on("/timeentered", handleTimeForm);
   //httpUpdater.setup(&webServer);
   webServer.begin();
@@ -1767,18 +1788,13 @@ void loop()
         }
       }
     }
-    Serial.print("HEAP before Animation:  ");
-    Serial.println(ESP.getFreeHeap());
-    setLedForTime(m, h, s);
-    Serial.print("HEAP After Animation:  ");
-    Serial.println(ESP.getFreeHeap());
-
+    //setLedForTime(m, h, s);
   }
 
-  //  Serial.print("Heap:  ");
+//   Serial.print("Heap:  ");
 
-  //Serial.println(ESP.getFreeHeap());
-  /*  
+  Serial.println(ESP.getFreeHeap());
+  /*
   Serial.print("  HeapFragmentation:  ");
   Serial.print(ESP.getHeapFragmentation());
   Serial.print("  Heap MaxBlockSize:  ");
@@ -1793,11 +1809,17 @@ void loop()
     myLedController->output();
   }
 
-  myAnimationController.tick();
+  //myAnimationController.tick();
 
   if (!isTimeSet)
   {
+    if(ESP.getFreeHeap() < 5000){
+       WiFi.forceSleepBegin();
+       isTimeSet = true;
+    }
     webServer.handleClient();
-    //dnsServer.processNextRequest();
+    dnsServer.processNextRequest();
   }
+
+
 }

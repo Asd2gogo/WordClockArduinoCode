@@ -9,15 +9,45 @@ DNSServer dnsServer;
 ESP8266WebServer webServer(80);
 
 String PROGMEM responseHTML =
-                      "<!DOCTYPE html><html lang='de'><head>"
-                      "<meta name='viewport' content='width=device-width'>"
-                      "<title>Uhrzeit einstellen</title></head><body>"
-                      "<form action=\"/timeentered\">"
-                      "<label for=\"appt\">Uhrzeit einstellen:  </label>"
-                      "<input type=\"time\" id=\"timeform\" name=\"clockTime\" autofocus required>"
-                      "<input type=\"submit\" value=\"Ok\">"
-                      "</form>"
-                      "</body></html>";
+                   
+      "<!DOCTYPE html><html lang='de'><head>"
+      "<meta name='viewport' content='width=device-width'>"
+      "<style>"
+      "li{"
+      "list-style-type: none;"
+      "border-color: white;"
+      "border-style: solid;"
+      "text-align: center;"
+      "   }"
+      "</style>"
+      "</head>"
+      "<body>"
+      "<form action=\"/timeentered\">"
+      "<ul>"
+      "<li>"
+      "<h1>WordClock Configurator</h1>"
+      "<label for=\"timeform\">Uhrzeit einstellen:  </label>"
+      "<input type=\"time\" id=\"timeform\" name=\"clockTime\" value=\"%02i:%02i\" autofocus required>"
+      "</li>"
+      "<li>"
+      "<label for=\"background\">Hintergrund Farbe:  </label>"
+      "<input type= \"color\" id = \"backgroundColor\" name=\"backgroundColor\" value =\"#%02X%02X%02X\" required>"
+      "</li>"
+      "<li>"
+      "<label for=\"wordColor\">Woerter Farbe:  </label>"
+      "<input type= \"color\" id = \"wordColor\" name=\"wordColor\" value=\"#%02X%02X%02X\" required>"
+      "</li>"
+
+      "<li>"
+      "</li>"
+
+      " <li>"
+      "<input type=\"submit\" value=\"Ok\">"
+      "</li>"
+      "</ul>"
+      "</form>"
+      "</body></html>";
+
 
 void handleTimeForm(){
   String s = webServer.arg("clockTime");
@@ -53,6 +83,7 @@ void setup() {
 void loop() {
   dnsServer.processNextRequest();
   webServer.handleClient();
+  Serial.println(ESP.getFreeHeap());
   
 }
 
