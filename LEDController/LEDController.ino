@@ -1,8 +1,10 @@
 //#include <ArduinoSTL.h>
 
-#define FASTLED_ALLOW_INTERRUPTS 0
-#define ANIMATION_SIZE 700
+//#define FASTLED_ALLOW_INTERRUPTS 0
+//#define FASTLED_INTERRUPT_RETRY_COUNT 1
+#define ANIMATION_SIZE 500
 #define LED_UPDATE_DELAY 19
+
 
 //overwrite PROGMEM for ESP01 to correctly save String (Char array) on External flash
 #define PROGMEM ICACHE_RODATA_ATTR
@@ -17,10 +19,10 @@
 #include <FastLED.h>
 
 //------------------------WEB Server-----------------------------------------
-
-#include <ESP8266WiFi.h>
 #include <DNSServer.h>
-#include <ESP8266WebServer.h>
+#include <ESP8266WiFi.h>
+#include <ESPAsyncTCP.h>
+#include "ESPAsyncWebServer.h"
 
 #define NUM_LEDS 225
 
@@ -278,7 +280,7 @@ public:
 
   ~WordConfiguration()
   {
-/*
+    /*
     delete word;
     word = NULL;
   */
@@ -427,11 +429,11 @@ public:
     int einer = minute % 10;
     if (minute == 11)
     {
-      returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(10))); // "elf"
+      returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(10))); // "elf"
     }
     else if (minute == 12)
     {
-      returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(11))); // "zwölf"
+      returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(11))); // "zwölf"
     }
     else
     {
@@ -441,7 +443,7 @@ public:
         break;
       case 1:
 
-        returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(0))); // "eine"
+        returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(0))); // "eine"
 
         if (zehner > 1)
         {
@@ -450,21 +452,21 @@ public:
         }
         break;
       case 6:
-        returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(5)));
+        returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(5)));
         if (zehner == 1)
         {
           returnVector.at(0).digitsToRemove = 1;
         }
         break;
       case 7:
-        returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(6)));
+        returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(6)));
         if (zehner == 1)
         {
           returnVector.at(0).digitsToRemove = 2;
         }
         break;
       default:
-        returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(einer - 1)));
+        returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(einer - 1)));
         break;
       }
 
@@ -474,14 +476,14 @@ public:
 
         break;
       case 1:
-        returnVector.push_back( WordConfiguration(minutesFirstDigitWords.at(9)));
+        returnVector.push_back(WordConfiguration(minutesFirstDigitWords.at(9)));
         break;
       default:
         if (einer != 0)
         {
-          returnVector.push_back( WordConfiguration(andWords.at(0)));
+          returnVector.push_back(WordConfiguration(andWords.at(0)));
         }
-        returnVector.push_back( WordConfiguration(minutesSecondDigitWords.at(zehner - 2)));
+        returnVector.push_back(WordConfiguration(minutesSecondDigitWords.at(zehner - 2)));
         break;
       }
     }
@@ -525,26 +527,26 @@ public:
     }
     else if (hour == 21)
     {
-      returnVector.push_back( WordConfiguration(hoursFirstDigitWords.at(0), 1)); //ein
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(0), 1)); //ein
       returnVector.at(0).digitsToRemove = 1;
     }
     else if (hour > 21)
     {
-      returnVector.push_back( WordConfiguration(hoursFirstDigitWords.at(hour - 21))); //jeweilige stunde
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(hour - 21))); //jeweilige stunde
     }
 
     if (hour < 20 && hour > 12)
     {
-      returnVector.push_back( WordConfiguration(hoursFirstDigitWords.at(9))); // zehn
+      returnVector.push_back(WordConfiguration(hoursFirstDigitWords.at(9))); // zehn
     }
     else if (hour > 20)
     {
-      returnVector.push_back( WordConfiguration(andWords.at(1)));              //und
-      returnVector.push_back( WordConfiguration(hoursSecondDigitWords.at(0))); //zwanzig
+      returnVector.push_back(WordConfiguration(andWords.at(1)));              //und
+      returnVector.push_back(WordConfiguration(hoursSecondDigitWords.at(0))); //zwanzig
     }
     else if (hour == 20)
     {
-      returnVector.push_back( WordConfiguration(hoursSecondDigitWords.at(0))); //zwanzig
+      returnVector.push_back(WordConfiguration(hoursSecondDigitWords.at(0))); //zwanzig
     }
 
     return returnVector;
@@ -653,10 +655,10 @@ public:
       }
 
       // "Viertel zwei"
-      timeQuaterEastWords.push_back( WordConfiguration(basicWords.at(0))); //Es
-      timeQuaterEastWords.push_back( WordConfiguration(basicWords.at(1))); //ist
+      timeQuaterEastWords.push_back(WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterEastWords.push_back(WordConfiguration(basicWords.at(1))); //ist
 
-      timeQuaterEastWords.push_back( WordConfiguration(quaterWords.at(0))); // viertel
+      timeQuaterEastWords.push_back(WordConfiguration(quaterWords.at(0))); // viertel
 
       int nextHour = hour + 1;
       twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3
@@ -672,10 +674,10 @@ public:
     { // halb
       //"Halb drei"
 
-      timeQuaterWords.push_back( WordConfiguration(basicWords.at(0))); //Es
-      timeQuaterWords.push_back( WordConfiguration(basicWords.at(1))); //ist
+      timeQuaterWords.push_back(WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterWords.push_back(WordConfiguration(basicWords.at(1))); //ist
 
-      timeQuaterWords.push_back( WordConfiguration(quaterWords.at(1))); // halb
+      timeQuaterWords.push_back(WordConfiguration(quaterWords.at(1))); // halb
       int nextHour = hour + 1;
       int twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3
 
@@ -690,12 +692,12 @@ public:
     if (minute == 45)
     { // viertel vor next hour // dreiviertel nextHour
 
-      timeQuaterWords.push_back( WordConfiguration(basicWords.at(0))); //Es
-      timeQuaterWords.push_back( WordConfiguration(basicWords.at(1))); //ist
+      timeQuaterWords.push_back(WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterWords.push_back(WordConfiguration(basicWords.at(1))); //ist
 
-      timeQuaterWords.push_back( WordConfiguration(quaterWords.at(0))); // viertel
+      timeQuaterWords.push_back(WordConfiguration(quaterWords.at(0))); // viertel
 
-      timeQuaterWords.push_back( WordConfiguration(beforeAfterWords.at(0))); // vor
+      timeQuaterWords.push_back(WordConfiguration(beforeAfterWords.at(0))); // vor
 
       int nextHour = hour + 1;
       int twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3
@@ -708,11 +710,11 @@ public:
       }
 
       // "drei viertel zwei"
-      timeQuaterEastWords.push_back( WordConfiguration(basicWords.at(0))); //Es
-      timeQuaterEastWords.push_back( WordConfiguration(basicWords.at(1))); //ist
+      timeQuaterEastWords.push_back(WordConfiguration(basicWords.at(0))); //Es
+      timeQuaterEastWords.push_back(WordConfiguration(basicWords.at(1))); //ist
 
-      timeQuaterEastWords.push_back( WordConfiguration(minutesFirstDigitWords.at(2))); // drei
-      timeQuaterEastWords.push_back( WordConfiguration(quaterWords.at(0)));            // viertel
+      timeQuaterEastWords.push_back(WordConfiguration(minutesFirstDigitWords.at(2))); // drei
+      timeQuaterEastWords.push_back(WordConfiguration(quaterWords.at(0)));            // viertel
 
       for (std::vector<WordConfiguration>::iterator pIterator = hourWords.begin(); pIterator != hourWords.end(); ++pIterator)
       {
@@ -723,8 +725,8 @@ public:
     if ((minute >= 15) && (minute <= 45) && (minute != 30))
     { // minutes before / after halb
 
-      timeMiutesBeforeAfterHalfWords.push_back( WordConfiguration(basicWords.at(0))); //Es
-      timeMiutesBeforeAfterHalfWords.push_back( WordConfiguration(basicWords.at(1))); //ist
+      timeMiutesBeforeAfterHalfWords.push_back(WordConfiguration(basicWords.at(0))); //Es
+      timeMiutesBeforeAfterHalfWords.push_back(WordConfiguration(basicWords.at(1))); //ist
 
       //"zehn Minuten vor Halb drei"
       int deltaMinutes = abs(minute - 30);
@@ -736,10 +738,10 @@ public:
         timeMiutesBeforeAfterHalfWords.push_back(*pIterator);
         // drei, vier ....
       }
-      timeMiutesBeforeAfterHalfWords.push_back( WordConfiguration(basicWords.at(2), deltaMinutes == 1 ? 1 : 0)); // "Minuten" // check for singular
+      timeMiutesBeforeAfterHalfWords.push_back(WordConfiguration(basicWords.at(2), deltaMinutes == 1 ? 1 : 0)); // "Minuten" // check for singular
 
-      timeMiutesBeforeAfterHalfWords.push_back( WordConfiguration(beforeAfterWords.at(minute > 30 ? 1 : 0))); // "vor" / "nach" // check for vor or nach
-      timeMiutesBeforeAfterHalfWords.push_back( WordConfiguration(quaterWords.at(1)));                        // "halb"
+      timeMiutesBeforeAfterHalfWords.push_back(WordConfiguration(beforeAfterWords.at(minute > 30 ? 1 : 0))); // "vor" / "nach" // check for vor or nach
+      timeMiutesBeforeAfterHalfWords.push_back(WordConfiguration(quaterWords.at(1)));                        // "halb"
 
       int nextHour = hour + 1;
       int twelfHourFormat = (nextHour % 13) + floor(nextHour / 13); // 10 11 12 1 2 3
@@ -818,7 +820,6 @@ public:
     _endTime = startTime + _duration;
     _endless = endless;
   }
-
 
   Animation(std::vector<WordConfiguration> wordConfigs, CRGB ledSetColor, int duration = 500, int delay = 0, bool endless = false)
   { // add wordsVector with Leds and set Should color or color hue delta if endless is enabled
@@ -1058,9 +1059,11 @@ public:
   void addAnimation(Animation anim)
   { // check if each pixel in the word is in an word or pixel animation and delete it from there
 
-    if (myAnimations.size() < ANIMATION_SIZE)
+    if (myAnimations.size() < ANIMATION_SIZE - 1)
     {
+      
       myAnimations.push_back(anim);
+  
     }
     else
     {
@@ -1191,8 +1194,8 @@ int lastSentenceID = -1;
 int sentencesCount;
 int animationMode = 0;
 bool forceReadingMode = false;
-CRGB backgroundColor = CRGB::Blue;
-CRGB wordColor = CRGB::Red;
+CRGB backgroundColor = CRGB::DarkRed;
+CRGB wordColor = CRGB::White;
 
 void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
 {
@@ -1216,7 +1219,7 @@ void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
   {
     lastSentenceID = sentenceID;
 
-    std::vector<WordConfiguration > activeSentence = possibleSentences.at(sentenceID);
+    std::vector<WordConfiguration> activeSentence = possibleSentences.at(sentenceID);
 
     // check if sentence is "Minuten vor / nach Halb" -> force reading mode
     forceReadingMode = false;
@@ -1241,10 +1244,11 @@ void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
     }
     else
     {
-      animationMode = random(0, 6); // 0 to 4
-    // animationMode = 5; // 0 to 4
+      //animationMode = random(0, 6); // 0 to 4
+       animationMode++ ;
+       if (animationMode == 6) animationMode = 0;
     }
-
+  
     switch (animationMode)
     {
 
@@ -1298,19 +1302,19 @@ void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
       {
         std::vector<CRGB *> leds = myLedController->getSquareLeds(x);
         leds.pop_back(); // remove last LED -> a snake is not a square
+        leds.shrink_to_fit();
 
         int index = 0;
         for (std::vector<CRGB *>::iterator ledIter = leds.begin(); ledIter != leds.end(); ledIter++)
         {
           int delay = cnt * 10;
           int isLedOfSetWord = false;
-          myAnimationController.addAnimation(Animation(*ledIter , CRGB(r, g, b), 10, delay));
+          myAnimationController.addAnimation(Animation(*ledIter, CRGB(r, g, b), 10, delay));
 
           // check if current led is part of a new word, so it shouldnt turn off, but to the set wordColor
           for (WordConfiguration wordConfig : activeSentence)
           {
-            if (isLedOfSetWord)
-              break; // if led is already found in activeSentence -> continue
+            if (isLedOfSetWord) break; // if led is already found in activeSentence -> continue
             for (CRGB *led : wordConfig.getLeds())
             {
               if (led == *ledIter)
@@ -1415,30 +1419,40 @@ void setLedForTime(int minute, int hour, int seconds, bool forceUpdate = false)
     break;
 
     case (5): // "Random words" ->  Random words turn on in random color, but only right sentence words turn on in wordColor
-      {
+    {
       myAnimationController.clearAllAnimations();
-      
-      int delay = 200;
-      int randomWordsCnt = random(5,10);
-        for (int x = 0; x < randomWordsCnt; x++){
-          Word* randomWord = myWordController->getRandomWord();
-          int randomDelay = delay * x + random(10,500);
-          myAnimationController.addAnimation(Animation(randomWord->wordLeds, CRGB(random8(),random8(),random8()),200, randomDelay));
-          myAnimationController.addAnimation(Animation(randomWord->wordLeds, backgroundColor, 600, randomDelay + 1000));
+      myAnimationController.addAnimation(Animation(myLedController->getAllLeds(), backgroundColor, 600));
+
+      int delay = 800;
+      int randomWordsCnt = random(5, 10);
+      for (int x = 0; x < randomWordsCnt; x++)
+      {
+        Word *randomWord = myWordController->getRandomWord();
+
+        // check if random word is in current active sentence -> get new Word
+        for (WordConfiguration activeWord : activeSentence){
+            while(activeWord.word == randomWord){
+              randomWord = myWordController->getRandomWord();
+            }
         }
 
-        int cnt = 0;
-         for (std::vector<WordConfiguration>::iterator wordIter = activeSentence.begin(); wordIter < activeSentence.end(); wordIter++,cnt ++)
-        {
 
-        int randomDelay = delay * cnt + random(10,500);
-          myAnimationController.addAnimation(Animation((*wordIter).getLeds() , CRGB(random8(),random8(),random8()),200, randomDelay));
-          myAnimationController.addAnimation(Animation((*wordIter).getLeds(), wordColor, 600, randomDelay + 1000));
-
-        }
+        int randomDelay = delay * x + random(200, 700);
+        myAnimationController.addAnimation(Animation(randomWord->wordLeds, CRGB(random8(), random8(), random8()), 500, randomDelay));
+        myAnimationController.addAnimation(Animation(randomWord->wordLeds, backgroundColor, 800, randomDelay + random(1200,2000)));
       }
 
-      break;
+      int cnt = 0;
+      for (std::vector<WordConfiguration>::iterator wordIter = activeSentence.begin(); wordIter < activeSentence.end(); wordIter++, cnt++)
+      {
+
+        int randomDelay = delay * cnt + random(10, 500);
+        myAnimationController.addAnimation(Animation((*wordIter).getLeds(), CRGB(random8(), random8(), random8()), 500, randomDelay));
+        myAnimationController.addAnimation(Animation((*wordIter).getLeds(), wordColor, 800, randomDelay + random(1200,2000)));
+      }
+    }
+
+    break;
 
     case (6): // "Matrix" -> random x position , random fadeouttime(diffrent tracelengths)
     {
@@ -1528,141 +1542,33 @@ void printLEDDataSerial()
 static int h = random(1, 12);
 static int m = random(0, 60);
 static int s = 0;
-bool isTimeSet = false;
+
 
 void setNewTime(int newH, int newM)
 {
-  isTimeSet = true;
+   s = 0;
+ if(h != newH && m != newM){
+    setLedForTime(newM, newH, s, true);
+ }
   h = newH;
-  m = newM;
-  s = 0;
-  setLedForTime(m, h, s, true);
-  WiFi.forceSleepBegin();
+  m = newM;  
 }
 
 //-------------------------------WebServer-----------------------
 
-
-class MyESPWebserver : public ESP8266WebServer
-{
-
-public:
-  using ESP8266WebServer::ESP8266WebServer;
-
-  virtual ~MyESPWebserver()
-  {
-    if (this->_currentArgs)
-    {
-      delete[] this->_currentArgs;
-      this->_currentArgs = nullptr;
-    }
-
-    if (this->_postArgs)
-    {
-      delete[] this->_postArgs;
-      this->_postArgs = nullptr;
-    }
-  }
-};
-
-const byte DNS_PORT = 53;
-IPAddress apIP(172, 217, 28, 1);
+bool newTime = false;
 DNSServer dnsServer;
-ESP8266WebServer webServer(80);
-//MyESPWebserver webServer(80);
-//WiFiServer webServer(80);
+AsyncWebServer webServer(80);
 
-void getFormatedHTMLResponse(char *string, int _h, int _m, uint8_t _wordColor[], uint8_t _backgroundColor[])
-{
+struct tcp_pcb;
+extern struct tcp_pcb* tcp_tw_pcbs;
+extern "C" void tcp_abort (struct tcp_pcb* pcb);
 
-  static const char responseHTML[] =
-
-      "<!DOCTYPE html><html lang='de'><head>"
-      "<meta name='viewport' content='width=device-width'>"
-      "<style>"
-      "li{"
-      "list-style-type: none;"
-      "border-color: white;"
-      "border-style: solid;"
-      "text-align: center;"
-      "   }"
-      "</style>"
-      "</head>"
-      "<body>"
-      "<form action=\"/timeentered\">"
-      "<ul>"
-      "<li>"
-      "<h1>WordClock Configurator</h1>"
-      "<label for=\"timeform\">Uhrzeit einstellen:  </label>"
-      "<input type=\"time\" id=\"timeform\" name=\"clockTime\" value=\"%02i:%02i\" autofocus required>"
-      "</li>"
-      "<li>"
-      "<label for=\"background\">Hintergrund Farbe:  </label>"
-      "<input type= \"color\" id = \"backgroundColor\" name=\"backgroundColor\" value =\"#%02X%02X%02X\" required>"
-      "</li>"
-      "<li>"
-      "<label for=\"wordColor\">Woerter Farbe:  </label>"
-      "<input type= \"color\" id = \"wordColor\" name=\"wordColor\" value=\"#%02X%02X%02X\" required>"
-      "</li>"
-
-      "<li>"
-      "</li>"
-
-      " <li>"
-      "<input type=\"submit\" value=\"Ok\">"
-      "</li>"
-      "</ul>"
-      "</form>"
-      "</body></html>";
-
-  sprintf(string, responseHTML, _h, _m, _backgroundColor[0], _backgroundColor[1], _backgroundColor[2], _wordColor[0], _wordColor[1], _wordColor[2]);
+void tcpCleanup (void) {
+  while (tcp_tw_pcbs)
+    tcp_abort(tcp_tw_pcbs);
 }
 
-int getSizeOfHTML()
-{
-
-  static const char responseHTML[] =
-
-      "<!DOCTYPE html><html lang='de'><head>"
-      "<meta name='viewport' content='width=device-width'>"
-      "<style>"
-      "li{"
-      "list-style-type: none;"
-      "border-color: white;"
-      "border-style: solid;"
-      "text-align: center;"
-      "   }"
-      "</style>"
-      "</head>"
-      "<body>"
-      "<form action=\"/timeentered\">"
-      "<ul>"
-      "<li>"
-      "<h1>WordClock Configurator</h1>"
-      "<label for=\"timeform\">Uhrzeit einstellen:  </label>"
-      "<input type=\"time\" id=\"timeform\" name=\"clockTime\" value=\"%02i:%02i\" autofocus required>"
-      "</li>"
-      "<li>"
-      "<label for=\"background\">Hintergrund Farbe:  </label>"
-      "<input type= \"color\" id = \"backgroundColor\" name=\"backgroundColor\" value =\"#%02X%02X%02X\" required>"
-      "</li>"
-      "<li>"
-      "<label for=\"wordColor\">Woerter Farbe:  </label>"
-      "<input type= \"color\" id = \"wordColor\" name=\"wordColor\" value=\"#%02X%02X%02X\" required>"
-      "</li>"
-
-      "<li>"
-      "</li>"
-
-      " <li>"
-      "<input type=\"submit\" value=\"Ok\">"
-      "</li>"
-      "</ul>"
-      "</form>"
-      "</body></html>";
-
-  return sizeof(responseHTML);
-}
 
 String splitString(String data, char separator, int index)
 {
@@ -1683,35 +1589,109 @@ String splitString(String data, char separator, int index)
   return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
-void returnWithHTML()
+void handleTimeForm(String time, String _wordColor, String _backgroundColor)
 {
-  char formatedString[getSizeOfHTML()];
-  getFormatedHTMLResponse(formatedString, h, m, wordColor.raw, backgroundColor.raw);
-  webServer.send(200, "text/html", formatedString);
-}
+  //String s = webServer.arg("clockTime");
 
-void handleTimeForm()
-{
-  String s = webServer.arg("clockTime");
-
-  String hstring = splitString(s, ':', 0);
-  String mstring = splitString(s, ':', 1);
+  String hstring = splitString(time, ':', 0);
+  String mstring = splitString(time, ':', 1);
 
   int hNumber = hstring.toInt();
   int mNumber = mstring.toInt();
 
-  String _wordColor = webServer.arg("wordColor");
-  String _backgroundColor = webServer.arg("backgroundColor");
+  //String _wordColor = webServer.arg("wordColor");
+  //String _backgroundColor = webServer.arg("backgroundColor");
 
   wordColor = CRGB((int)strtoll(&_wordColor[1], NULL, 16));
   backgroundColor = CRGB((int)strtoll(&_backgroundColor[1], NULL, 16));
 
   setNewTime(hNumber, mNumber);
-
-  //char formatedString[getSizeOfHTML()];
-  //getFormatedHTMLResponse(formatedString, h, m, wordColor.raw, backgroundColor.raw);
-  //webServer.send(200, "text/html", formatedString);
 }
+
+String clockTimeParamString, wordColorString, backgroundColorString;
+
+class CaptiveRequestHandler : public AsyncWebHandler
+{
+public:
+  CaptiveRequestHandler() {}
+  virtual ~CaptiveRequestHandler() {}
+
+  bool canHandle(AsyncWebServerRequest *request)
+  {
+    //request->addInterestingHeader("ANY");
+    return true;
+  }
+
+  void handleRequest(AsyncWebServerRequest *request)
+  {
+    
+    
+  //get all the URL parameters from request and if all are present update time and colors 
+    if (request->hasParam("clockTime"))
+    {
+      AsyncWebParameter *clockTimeParam = request->getParam("clockTime");
+      if (request->hasParam("backgroundColor"))
+      {
+        AsyncWebParameter *backgroundColor = request->getParam("backgroundColor");
+        if (request->hasParam("wordColor"))
+        {
+          AsyncWebParameter *wordColor = request->getParam("wordColor");
+
+            clockTimeParamString = clockTimeParam->value().c_str();
+            backgroundColorString = backgroundColor->value().c_str();
+            wordColorString = wordColor->value().c_str();
+
+            newTime = true;
+        }
+      }
+    }
+    
+
+    AsyncResponseStream *response = request->beginResponseStream("text/html");
+
+    response->print("<!DOCTYPE html><html lang='de'><head>");
+    response->print("<meta name='viewport' content='width=device-width'>");
+    response->print("<style>");
+    response->print("li{");
+    response->print("list-style-type: none;");
+    response->print("border-color: white;");
+    response->print("border-style: solid;");
+    response->print("text-align: center;");
+    response->print("}");
+    response->print("</style>");
+    response->print("</head>");
+    response->print("<body>");
+    response->print("<form action=\"/timeentered\">");
+    response->print("<ul>");
+    response->print("<li>");
+    response->print("<h1>WordClock Configurator</h1>");
+    response->print("<label for=\"timeform\">Uhrzeit einstellen:  </label>");
+    response->printf("<input type=\"time\" id=\"timeform\" name=\"clockTime\" value=\"%02i:%02i\" autofocus required>", h, m);
+    response->print("</li>");
+    response->print("<li>");
+    response->print("<label for=\"background\">Hintergrund Farbe:  </label>");
+    response->printf("<input type= \"color\" id = \"backgroundColor\" name=\"backgroundColor\" value =\"#%02X%02X%02X\" required>", backgroundColor.raw[0],backgroundColor.raw[1],backgroundColor.raw[2]);
+    response->print("</li>");
+    response->print("<li>");
+    response->print("<label for=\"wordColor\">Woerter Farbe:  </label>");
+    response->printf("<input type= \"color\" id = \"wordColor\" name=\"wordColor\" value=\"#%02X%02X%02X\" required>", wordColor.raw[0],wordColor.raw[1],wordColor.raw[2]);
+    response->print("</li>");
+    response->print(" <li>");
+    response->print("<input type=\"submit\" id =\"button\" onclick = \"setTimeout()\"  value=\"Ok\">");
+    response->print("</li>");
+    response->print("</ul>");
+    response->print("</form>");
+    response->print("<script>");
+    response->print("function setTimeout() {");
+    response->print("document.getElementById(\"button\").disabled=true;");
+    response->print("setTimeout(\"document.getElementById(\"button\").disabled=false;\",2000);");
+    response->print("}");
+    response->print("</script>");
+    response->print("</body></html>");
+    
+    request->send(response);
+  }
+};
 
 void setupAndStartWifi()
 {
@@ -1720,23 +1700,13 @@ void setupAndStartWifi()
   const String PASS = "12345677654321";
   WiFi.persistent(false);
   WiFi.mode(WIFI_AP);
-  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
   WiFi.softAP(WSSID, PASS, 1, true, 1);
-
   // reply to all ip requests with ip of this device
-  dnsServer.start(DNS_PORT, "*", apIP);
+  dnsServer.start(53, "*", WiFi.softAPIP());
+  webServer.addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER); //only when requested from AP
 
-  //replay to all requests with same HTML
-  webServer.onNotFound(returnWithHTML);
-  //webServer.on("/", returnWithHTML);
-  webServer.on("/timeentered", handleTimeForm);
-  //httpUpdater.setup(&webServer);
   webServer.begin();
 }
-
-//------------------------EEPROM---------------------------
-
-#define DATA_OFFSET = 10
 
 //-----------------------Standard Arduino --------------------------------
 
@@ -1746,7 +1716,6 @@ void setup()
   Serial.begin(115200);
 
   setupAndStartWifi();
-
 
   myLedController->setup(); // disable for debug // Add leds to FastLED Library
   //Serial.println("Setup Done");
@@ -1758,6 +1727,7 @@ void setup()
 
   // delay(200);
   //Serial.println("booted");
+
 }
 
 unsigned long lastIncrease = 0;
@@ -1780,7 +1750,7 @@ void loop()
       m++;
       if (m > 59)
       {
-        h += 1;
+        h ++;
         m = 0;
         if (h > 23)
         {
@@ -1788,10 +1758,16 @@ void loop()
         }
       }
     }
-    //setLedForTime(m, h, s);
+    setLedForTime(m, h, s);
   }
 
-//   Serial.print("Heap:  ");
+  if (newTime){
+    newTime = false;
+    handleTimeForm(clockTimeParamString, wordColorString, backgroundColorString);
+  }
+
+  //   Serial.print("Heap:  ");
+
 
   Serial.println(ESP.getFreeHeap());
   /*
@@ -1809,17 +1785,8 @@ void loop()
     myLedController->output();
   }
 
-  //myAnimationController.tick();
+  myAnimationController.tick();
 
-  if (!isTimeSet)
-  {
-    if(ESP.getFreeHeap() < 5000){
-       WiFi.forceSleepBegin();
-       isTimeSet = true;
-    }
-    webServer.handleClient();
-    dnsServer.processNextRequest();
-  }
-
-
+  dnsServer.processNextRequest();
+  tcpCleanup();
 }
