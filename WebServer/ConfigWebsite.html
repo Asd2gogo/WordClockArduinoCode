@@ -1,33 +1,39 @@
-"<!DOCTYPE html><html lang='de'><head>"
-    "<meta name='viewport' content='width=device-width'>"
-    "<style>"
-        "li{"
-            "list-style-type: none;"
-            "border-color: white;"
-            "border-style: solid;"
-            "text-align: center;"
-     "   }"
-    "</style>"
-    "</head>"
-    "<body>"
-    "<form action=\"/timeentered\">"
-    "<ul>"
-    "<li>"
-        "<h1>WordClock Configurator</h1>"
-        "<label for=\"timeform\">Uhrzeit einstellen:  </label>"
-        "<input type=\"time\" id=\"timeform\" name=\"clockTime\" value=\"%02i:%02i\" autofocus required>"
-    "</li>"
-    "<li>"
-        "<label for=\"background\">Hintergrund Farbe:  </label>"
-        "<input type= \"color\" id = \"backgroundColor\" name=\"backgroundColor\" value =\"#%02X%02X%02X\" required>"
-    "</li>"
-    "<li>"
-        "<label for=\"wordColor\">Wörter Farbe:  </label>"
-        "<input type= \"color\" id = \"wordColor\" name=\"wordColor\" value=\"#%02X%02X%02X\" required>"
-    "</li>"
-   " <li>"
-        "<input type=\"submit\" value=\"Ok\">"
-    "</li>"
-    "</ul>"
-    "</form>"
-    "</body></html>"
+<!DOCTYPE html><html lang='de'><head>
+    <meta name='viewport' content='width=device-width'>
+    <style>
+    li{
+    list-style-type: none;
+    border-color: white;
+    border-style: solid;
+    text-align: center;
+    }
+    </style>
+    </head>
+    <body>
+    <form action="/timeentered">
+    <ul>
+    <li>
+    <h1>WordClock Configurator</h1>
+    <label for="timeform">Uhrzeit einstellen:  </label>
+    response->printf("<input type="time" id="timeform" name="clockTime" value="%02i:%02i" autofocus required>", h, m);
+    </li>
+    <li>
+    <label for="background">Hintergrund Farbe:  </label>
+    response->printf("<input type= "color" id = "backgroundColor" name="backgroundColor" value ="#%02X%02X%02X" required>", backgroundColor.raw);
+    </li>
+    <li>
+    <label for="wordColor">Woerter Farbe:  </label>
+    response->printf("<input type= "color" id = "wordColor" name="wordColor" value="#%02X%02X%02X"  onclick = "setTimeout();"required>", wordColor.raw);
+    </li>
+     <li>
+    <input type="submit" id ="button" value="Ok">
+    </li>
+    </ul>
+    </form>
+    <script>
+    function setTimeout() {
+    document.getElementById("button").disabled=true;
+    setTimeout('document.getElementById("button").disabled=false;',2000);
+    }
+    </script>
+    </body></html>

@@ -9,11 +9,14 @@
                 "C:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\StandardCplusplus-master\\**",
                 "C:\\Users\\Sven Weinert\\OneDrive - Sennheiser electronic GmbH & Co. KG\\Projekte\\WordClock\\Arduino\\FastLED-master\\**",
                 "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.20\\**",
-                "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\**"
+                "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\**",
+                "C:\\Users\\049sweinert\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.2\\**",
+                "C:\\Users\\049sweinert\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\**"
             ],
             "forcedInclude": [
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h",
-                "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.20\\cores\\arduino\\Arduino.h"
+                "C:\\Users\\Sven Weinert\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.20\\cores\\arduino\\Arduino.h",
+                "C:\\Users\\049sweinert\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.2\\cores\\arduino\\Arduino.h"
             ],
             "intelliSenseMode": "msvc-x64"
         }
